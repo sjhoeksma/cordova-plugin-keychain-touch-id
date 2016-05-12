@@ -107,7 +107,7 @@
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 if(error != nil) {
-										CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: error.code];
+										CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%i", error.code]];
 										[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 });

@@ -1,7 +1,7 @@
 var argscheck = require('cordova/argscheck'),
                exec = require('cordova/exec');
                
-var touchIDKeychainPlugin = {
+var touchID = {
 	isAvailable: function(successCallback, errorCallback){
 		exec(successCallback, errorCallback, "TouchID", "isTouchIDAvailable", []);
 	},
