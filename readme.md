@@ -20,31 +20,32 @@ if (window.touchID) {
 **isAvailable(successCallback, errorCallback(msg))**
 Check if touchID is available for the used device 	
 	
-**	save(key,password, successCallback, errorCallback(msg))**
+**save(key,password, successCallback, errorCallback(msg))**
 Save a password under the key in the device keychain, which can be retrieved using a fingerprint
 
-**	verify(key,message,successCallback(password), errorCallback(errorCode))**
+**verify(key,message,successCallback(password), errorCallback(errorCode))**
 Open the fingerprint dialog, for the given key, showing an additional message
 successCallback will return the password stored in key chain
 errorCallback will return the error code, where -1 indicated not avaialbe
 
-**	has(key,successCallback, errorCallback)**
+**has(key,successCallback, errorCallback)**
 Check if there is a password stored within the keychain for the given key
 
-**	delete(key,successCallback, errorCallback)**
+**delete(key,successCallback, errorCallback)**
 Delete the password stored under given key from the keychain
 
 
-# Example
+# Examples
 
 ```
 	if (window.touchID) {
 		window.touchID.isAvailable(function(){
 			 window.touchID.has("MyKey",function(){
-				 $rootScope.$broadcast('touchID.available');
-			 });
+				 alert("Touch ID avaialble and Password key avaialble");
+			 },function(){
+			   alert("Touch ID available but no Password Key available");
 		},function(msg){
-			alert("NOT" + msg);
+			alert("no Touch ID available");
 		});
 	}
 	
@@ -55,7 +56,17 @@ Delete the password stored under given key from the keychain
 		  });
 	}
 	
+	if (window.touchID) {
+		  window.touchID.save("MyKey","My Password",function(){
+			   alert("Password saved");
+      });
+  }
 	
+	if (window.touchID) {
+		  window.touchID.delete("MyKey",function(){
+			   alert("Password key deleted");
+      });
+  }
 				
 ```
 
