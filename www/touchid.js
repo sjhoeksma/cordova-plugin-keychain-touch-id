@@ -3,19 +3,19 @@ var argscheck = require('cordova/argscheck'),
                
 var touchID = {
 	isAvailable: function(successCallback, errorCallback){
-		exec(successCallback, errorCallback, "TouchID", "isTouchIDAvailable", []);
+		exec(successCallback, errorCallback, "TouchID", "isAvailable", []);
 	},
 	save: function(key,password, successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "TouchID", "savePasswordToKeychain", [key,password]);
+		exec(successCallback, errorCallback, "TouchID", "save", [key,password]);
 	},
 	verify: function(key,message,successCallback, errorCallback){
-		exec(successCallback, errorCallback, "TouchID", "getPasswordFromKeychain", [key,message]);
+		exec(successCallback, errorCallback, "TouchID", "verify", [key,message]);
 	},
 	has: function(key,successCallback, errorCallback){
-		exec(successCallback, errorCallback, "TouchID", "hasPasswordInKeychain", [key]);
+		exec(successCallback, errorCallback, "TouchID", "has", [key]);
 	},
 	delete: function(key,successCallback, errorCallback){
-		exec(successCallback, errorCallback, "TouchID", "deleteKeychainPassword", [key]);
+		exec(successCallback, errorCallback, "TouchID", "delete", [key]);
 	}
 };
 

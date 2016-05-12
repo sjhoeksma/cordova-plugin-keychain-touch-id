@@ -24,7 +24,7 @@
 
 @implementation TouchIDKeychain
 
-- (void)isTouchIDAvailable:(CDVInvokedUrlCommand*)command{
+- (void)isAvailable:(CDVInvokedUrlCommand*)command{
     self.laContext = [[LAContext alloc] init];
     BOOL touchIDAvailable = [self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
     if(touchIDAvailable){
@@ -37,7 +37,7 @@
     }
 }
 
-- (void)hasPasswordInKeychain:(CDVInvokedUrlCommand*)command{
+- (void)has:(CDVInvokedUrlCommand*)command{
   	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     BOOL hasLoginKey = [[NSUserDefaults standardUserDefaults] boolForKey:self.TAG];
     if(hasLoginKey){
@@ -50,7 +50,7 @@
     }
 }
 
-- (void)savePasswordToKeychain:(CDVInvokedUrlCommand*)command{
+- (void)save:(CDVInvokedUrlCommand*)command{
 	 	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     NSString* password = (NSString*)[command.arguments objectAtIndex:1];
     @try {
@@ -69,7 +69,7 @@
     }
 }
 
--(void)deleteKeychainPassword:(CDVInvokedUrlCommand*)command{
+-(void)delete:(CDVInvokedUrlCommand*)command{
 	 	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     @try {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:self.TAG];
@@ -84,7 +84,7 @@
     
 }
 
--(void)getPasswordFromKeychain:(CDVInvokedUrlCommand*)command{
+-(void)verify:(CDVInvokedUrlCommand*)command{
 	 	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
 	  NSString* message = (NSString*)[command.arguments objectAtIndex:1];
     self.laContext = [[LAContext alloc] init];

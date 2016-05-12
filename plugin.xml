@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="org.hoeksma.cordova.touchid" version="0.0.1">
+        id="org.hoeksma.cordova.touchid" version="0.0.2">
     <name>TouchID+Keychain</name>
     <description>TouchID+Keychain cordova plugin for iOS</description>
     <license>Apache 2.0</license>
     <keywords>cordova,touchid,keychain,plugin</keywords>
 
     <js-module src="www/touchid.js" name="TouchID">
-        <clobbers target="window.touchid" />
+        <clobbers target="window.touchID" />
     </js-module>
 
     <platform name="ios">

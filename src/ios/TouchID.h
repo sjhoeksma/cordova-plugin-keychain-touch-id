@@ -29,11 +29,11 @@
 @property (strong, nonatomic) KeychainWrapper* MyKeychainWrapper;
 @property (strong, nonatomic) LAContext* laContext;
 
-- (void) isTouchIDAvailable:(CDVInvokedUrlCommand*)command;
-- (void) hasPasswordInKeychain:(CDVInvokedUrlCommand*)command;
-- (void) savePasswordToKeychain:(CDVInvokedUrlCommand*)command;
-- (void) getPasswordFromKeychain:(CDVInvokedUrlCommand*)command;
-- (void) deleteKeychainPassword:(CDVInvokedUrlCommand*)command;
+- (void) isAvailable:(CDVInvokedUrlCommand*)command;
+- (void) has:(CDVInvokedUrlCommand*)command;
+- (void) save:(CDVInvokedUrlCommand*)command;
+- (void) verify:(CDVInvokedUrlCommand*)command;
+- (void) delete:(CDVInvokedUrlCommand*)command;
 
 @end
 
