@@ -99,11 +99,8 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
                 if(success){
-                    //Entonces busca el password en el keychain
                     NSString *password = [self.MyKeychainWrapper myObjectForKey:@"v_Data"];
-                    NSMutableDictionary* retorno = [NSMutableDictionary dictionaryWithCapacity:1];
-                    [retorno setObject:password forKey:@"password"];
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:retorno];
+									  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 if(error != nil) {
