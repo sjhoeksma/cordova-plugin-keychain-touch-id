@@ -22,7 +22,7 @@
 #include <sys/sysctl.h>
 #import <Cordova/CDV.h>
 
-@implementation TouchIDKeychain
+@implementation TouchID
 
 - (void)isAvailable:(CDVInvokedUrlCommand*)command{
     self.laContext = [[LAContext alloc] init];
