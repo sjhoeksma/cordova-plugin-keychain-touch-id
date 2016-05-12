@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="org.hoeksma.cordova.touchid" version="0.0.1">
+    <name>TouchID+Keychain</name>
+    <description>TouchID+Keychain cordova plugin for iOS</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,touchid,keychain,plugin</keywords>
+
+    <js-module src="www/touchid.js" name="TouchID">
+        <clobbers target="window.touchid" />
+    </js-module>
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="TouchID">
+                <param name="ios-package" value="TouchID"/>
+            </feature>
+        </config-file>
+        <header-file src="src/ios/KeychainWrapper.h" />
+        <source-file src="src/ios/KeychainWrapper.m" />
+        <header-file src="src/ios/TouchID.h" />
+        <source-file src="src/ios/TouchID.m" />
+        <framework src="Security.framework" />
+        <framework src="Foundation.framework"/>
+        <framework src="LocalAuthentication.framework"/>
+    </platform>
+</plugin>
