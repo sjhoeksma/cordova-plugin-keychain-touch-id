@@ -23,7 +23,7 @@
 #import <Cordova/CDV.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 
-@interface TouchIDKeychain : CDVPlugin {}
+@interface TouchID : CDVPlugin {}
 
 @property (strong,nonatomic)NSString* TAG;
 @property (strong, nonatomic) KeychainWrapper* MyKeychainWrapper;
