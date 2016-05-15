@@ -1,7 +1,7 @@
 var argscheck = require('cordova/argscheck'),
                exec = require('cordova/exec');
                
-var touchID = {
+var touchid = {
 	isAvailable: function(successCallback, errorCallback){
 		exec(successCallback, errorCallback, "TouchID", "isAvailable", []);
 	},
@@ -19,4 +19,4 @@ var touchID = {
 	}
 };
 
-module.exports = touchID;
+module.exports = touchid;
