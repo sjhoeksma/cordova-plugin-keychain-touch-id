@@ -1,6 +1,51 @@
-# touchId & keychain cordova plugin
 
-Base on the original touch ID created by different people
+
+# cordova-plugin-keychain-touch-id 
+
+A cordova plugin adding the IOS fingerprint/touchid to you app and allowing you to store a password securely in the device keychain.
+
+## Installation
+
+### Automatically (CLI / Plugman)
+Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman), compatible with [PhoneGap 3.0 CLI](http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface_add_features), here's how it works with the CLI (backup your project first!):
+
+From npm:
+```
+$ cordova plugin add cordova-plugin-keychain-touch-id
+$ cordova prepare
+```
+
+The latest, from the master repo:
+```
+$ cordova plugin add https://github.com/sjhoeksma/cordova-plugin-keychain-touch-id
+$ cordova prepare
+```
+
+touchid.js is brought in automatically. There is no need to change or add anything in your html.
+
+### Manually
+
+1\. Add the following xml to your `config.xml` in the root directory of your `www` folder:
+```xml
+<feature name="TouchID">
+  <param name="ios-package" value="TouchID" />
+</feature>
+```
+
+You'll need to add the `LocalAuthentication.framework` and `Security.framework` to your project.
+Click your project, Build Phases, Link Binary With Libraries, search for and add the frameworks.
+
+2\. Grab a copy of TouchID.js, add it to your project and reference it in `index.html`:
+```html
+<script type="text/javascript" src="js/touchid.js"></script>
+```
+
+3\. Download the source files and copy them to your project.
+
+iOS: Copy the four `.h` and two `.m` files to `platforms/ios/<ProjectName>/Plugins`
+
+### Base on the original touch ID created by different people
+* https://github.com/EddyVerbruggen/cordova-plugin-touch-id
 * https://github.com/kunder-lab/kunder-touchid-keychain
 * https://github.com/PeerioTechnologies/peerio-keychain-touchid,
 * https://github.com/nheezemans/touchid/blob/master/src/ios/TouchID.m
