@@ -164,24 +164,6 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
                 mCancelButton.setText(cancel_id);
                 mFingerprintContent.setVisibility(View.VISIBLE);
                 break;
-            case NEW_FINGERPRINT_ENROLLED:
-                // Intentional fall through
-            case BACKUP:
-                if (mStage == Stage.NEW_FINGERPRINT_ENROLLED) {
-
-                }
-                if (!mKeyguardManager.isKeyguardSecure()) {
-                    // Show a message that the user hasn't set up a lock screen.
-                    int secure_lock_screen_required_id = getResources()
-                            .getIdentifier("secure_lock_screen_required", "string",
-                                    FingerprintAuth.packageName);
-                    Toast.makeText(getContext(),
-                            getString(secure_lock_screen_required_id),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                showAuthenticationScreen();
-                break;
         }
     }
 
