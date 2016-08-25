@@ -22,7 +22,6 @@
     <string name="fingerprint_description">Tocca per accedere</string>
     <string name="fingerprint_hint">Touch sensor</string>
     <string name="fingerprint_not_recognized">Impronta non riconosciuta, prova ancora</string>
-    <string name="fingerprint_success">Impronta riconosciuto</string>
+    <string name="fingerprint_success">Impronta riconosciuta</string>
     <string name="new_fingerprint_enrolled_description">A new fingerprint was added to this device, so your password is required.</string>
-    <string name="secure_lock_screen_required">Secure lock screen required!</string>
 </resources>

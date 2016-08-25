@@ -37,6 +37,11 @@
     }
 }
 
+- (void)setLocale:(CDVInvokedUrlCommand*)command{
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void)has:(CDVInvokedUrlCommand*)command{
   	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     BOOL hasLoginKey = [[NSUserDefaults standardUserDefaults] boolForKey:self.TAG];
@@ -80,8 +85,8 @@
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Could not delete password from chain"];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
-    
-    
+
+
 }
 
 -(void)verify:(CDVInvokedUrlCommand*)command{
@@ -89,15 +94,15 @@
 	  NSString* message = (NSString*)[command.arguments objectAtIndex:1];
     self.laContext = [[LAContext alloc] init];
     self.MyKeychainWrapper = [[KeychainWrapper alloc]init];
-    
+
     BOOL hasLoginKey = [[NSUserDefaults standardUserDefaults] boolForKey:self.TAG];
     if(hasLoginKey){
         BOOL touchIDAvailable = [self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-        
+
         if(touchIDAvailable){
             [self.laContext evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:message reply:^(BOOL success, NSError *error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    
+
                 if(success){
                     NSString *password = [self.MyKeychainWrapper myObjectForKey:@"v_Data"];
 									  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
@@ -109,7 +114,7 @@
                 }
                 });
             }];
-            
+
         }
         else{
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"-1"];
