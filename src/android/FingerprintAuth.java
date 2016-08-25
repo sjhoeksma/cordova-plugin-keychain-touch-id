@@ -171,7 +171,7 @@ public class FingerprintAuth extends CordovaPlugin {
                 }
                 mKeyID = key;
                 mToEncrypt = password;
-                showFingerprintDialog(Cipher.ENCRYPT_MODE);
+                showFingerprintDialog(Cipher.ENCRYPT_MODE,null);
 
                 return true;
             } else {
@@ -182,13 +182,14 @@ public class FingerprintAuth extends CordovaPlugin {
             return true;
         } else if (action.equals("verify")) {
             final String key = args.getString(0);
+            final String message = args.getString(1);
 
             if (isFingerprintAuthAvailable()) {
                 SecretKey secretKey = getSecretKey();
 
                 if (secretKey != null) {
                     mKeyID = key;
-                    showFingerprintDialog(Cipher.DECRYPT_MODE);
+                    showFingerprintDialog(Cipher.DECRYPT_MODE,message);
                     mPluginResult.setKeepCallback(true);
                 } else {
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR);
@@ -350,8 +351,8 @@ public class FingerprintAuth extends CordovaPlugin {
                     KeyProperties.PURPOSE_ENCRYPT |
                             KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                            // Require the user to authenticate with a fingerprint to authorize every use
-                            // of the key
+                    // Require the user to authenticate with a fingerprint to authorize every use
+                    // of the key
                     .setUserAuthenticationRequired(true)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                     .build());
@@ -377,7 +378,7 @@ public class FingerprintAuth extends CordovaPlugin {
         return isKeyCreated;
     }
 
-    public void showFingerprintDialog(final int mode){
+    public void showFingerprintDialog(final int mode, final String message){
         final FingerprintAuth auth = this;
         mCurrentMode = mode;
         cordova.getActivity().runOnUiThread(new Runnable() {
@@ -387,6 +388,7 @@ public class FingerprintAuth extends CordovaPlugin {
                 mFragment = new FingerprintAuthenticationDialogFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt("dialogMode", mode);
+                bundle.putString("dialogMessage",message);
                 mFragment.setArguments(bundle);
                 mFragment.setmFingerPrintAuth(auth);
 

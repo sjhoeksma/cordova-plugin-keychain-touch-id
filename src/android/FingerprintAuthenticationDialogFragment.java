@@ -77,6 +77,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
                              Bundle savedInstanceState) {
         Bundle args = getArguments();
         int dialogMode = args.getInt("dialogMode");
+        String message = args.getString("dialogMessage");
         Log.d(TAG, "dialogMode: " + dialogMode);
 
         int fingerprint_auth_dialog_title_id = getResources()
@@ -89,6 +90,10 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
         int cancel_button_id = getResources()
                 .getIdentifier("cancel_button", "id", FingerprintAuth.packageName);
+
+        TextView description =  (TextView) v.findViewById(getResources()
+                .getIdentifier("fingerprint_description", "id", FingerprintAuth.packageName));
+        description.setText(message);
         mCancelButton = (Button) v.findViewById(cancel_button_id);
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
