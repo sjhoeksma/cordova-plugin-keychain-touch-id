@@ -244,8 +244,14 @@ public class FingerprintAuth extends CordovaPlugin {
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.remove("fing"+ key);
             editor.remove("fing_iv"+ key);
-            mPluginResult = new PluginResult(PluginResult.Status.OK);
-            mCallbackContext.success();
+            boolean removed = editor.commit();
+            if (removed) {
+                mPluginResult = new PluginResult(PluginResult.Status.OK);
+                mCallbackContext.success();
+            } else {
+                mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+                mCallbackContext.error("Could not delete password");
+            }
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
         }

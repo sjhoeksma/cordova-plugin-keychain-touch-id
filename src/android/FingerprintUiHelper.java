@@ -134,7 +134,7 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
                 .getIdentifier("ic_fingerprint_success", "drawable", FingerprintAuth.packageName);
         mIcon.setImageResource(ic_fingerprint_success_id);
         int success_color_id = mContext.getResources()
-                .getIdentifier("success_color", "color", FingerprintAuth.packageName);
+                .getIdentifier("kc_success_color", "color", FingerprintAuth.packageName);
         mErrorTextView.setTextColor(
                 mErrorTextView.getResources().getColor(success_color_id, null));
         int fingerprint_success_id = mContext.getResources()
