@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Bundle;
 import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -152,11 +153,6 @@ public class FingerprintAuth extends CordovaPlugin {
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
         }
-       /* try {
-            mKeyStore.deleteEntry(mClientId);
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        }*/
         if (action.equals("save")) {
             final String key = args.getString(0);
             final String password = args.getString(1);
@@ -205,7 +201,7 @@ public class FingerprintAuth extends CordovaPlugin {
             return true;
         }  else if (action.equals("isAvailable")) {
             JSONObject resultJson = new JSONObject();
-            if (isFingerprintAuthAvailable() && mFingerPrintManager.isHardwareDetected() && mFingerPrintManager.hasEnrolledFingerprints()) {
+            if (isFingerprintAuthAvailable()) {
                 mPluginResult = new PluginResult(PluginResult.Status.OK);
                 mCallbackContext.success("YES");
                 mCallbackContext.sendPluginResult(mPluginResult);
@@ -259,8 +255,7 @@ public class FingerprintAuth extends CordovaPlugin {
     }
 
     private boolean isFingerprintAuthAvailable() {
-        return mFingerPrintManager.isHardwareDetected()
-                && mFingerPrintManager.hasEnrolledFingerprints();
+        return mFingerPrintManager.isHardwareDetected() && mFingerPrintManager.hasEnrolledFingerprints();
     }
 
     /**
@@ -292,6 +287,10 @@ public class FingerprintAuth extends CordovaPlugin {
             }
 
             initCipher = true;
+        } catch (KeyPermanentlyInvalidatedException e) {
+            removePermanentlyInvalidatedKey();
+            errorMessage = "KeyPermanentlyInvalidatedException";
+            setPluginResultError(errorMessage);
         } catch (InvalidKeyException e) {
             errorMessage = initCipherExceptionErrorPrefix
                     + "InvalidKeyException";
@@ -471,4 +470,12 @@ public class FingerprintAuth extends CordovaPlugin {
         return false;
     }
 
+    private void removePermanentlyInvalidatedKey() {
+        try {
+            mKeyStore.deleteEntry(mClientId);
+            Log.i(TAG, "Permanently invalidated key was removed.");
+        } catch (KeyStoreException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
 }
