@@ -2,7 +2,7 @@
 
 # cordova-plugin-keychain-touch-id 
 
-A cordova plugin adding the IOS fingerprint/touchid to you app and allowing you to store a password securely in the device keychain.
+A cordova plugin adding the iOS TouchID / Android fingerprint to your app and allowing you to store a password securely in the device keychain.
 
 ## Installation
 
@@ -47,7 +47,7 @@ iOS: Copy the four `.h` and two `.m` files to `platforms/ios/<ProjectName>/Plugi
 ### Base on the original touch ID created by different people
 * https://github.com/EddyVerbruggen/cordova-plugin-touch-id
 * https://github.com/kunder-lab/kunder-touchid-keychain
-* https://github.com/PeerioTechnologies/peerio-keychain-touchid,
+* https://github.com/PeerioTechnologies/peerio-keychain-touchid
 * https://github.com/nheezemans/touchid/blob/master/src/ios/TouchID.m
 
 Cordova plugin for interacting with iOS touchId and keychain
@@ -70,9 +70,9 @@ Call the function you like
 will save a password under the key in the device keychain, which can be retrieved using a fingerprint
 
 **verify(key,message,successCallback(password), errorCallback(errorCode))**
-wil open the fingerprint dialog, for the given key, showing an additional message.
+will open the fingerprint dialog, for the given key, showing an additional message.
 successCallback will return the password stored in key chain.
-errorCallback will return the error code, where -1 indicated not avaialbe.
+errorCallback will return the error code, where -1 indicated not available.
 
 **has(key,successCallback, errorCallback)**
 will check if there is a password stored within the keychain for the given key
@@ -80,37 +80,45 @@ will check if there is a password stored within the keychain for the given key
 **delete(key,successCallback, errorCallback)**
 will delete the password stored under given key from the keychain
 
+## Android quirks
+
+When a new fingerprint is enrolled, no more fingerprints are enrolled, secure lock screen is disabled or forcibly reset,
+the key which is used to hash the password is permanently invalidated. It cannot be used anymore.
+
+`verify` and `save` functions will return the `"KeyPermanentlyInvalidatedException"` message in the error callback.
+This invalid key is removed - user needs to **save their password again**.
 
 # Examples
 
-```
-	if (window.plugins.touchid) {
-		window.plugins.touchid.isAvailable(function(){
-			 window.plugins.touchid.has("MyKey",function(){
-				 alert("Touch ID avaialble and Password key avaialble");
-			 },function(){
-			   alert("Touch ID available but no Password Key available");
-		},function(msg){
-			alert("no Touch ID available");
-		});
-	}
-	
-	if (window.plugins.touchid) {
-		  window.plugins.touchid.verify("MyKey","My Message",function(password){
-			  alert("Tocuh " + password);
-		  });
-	}
-	
-	if (window.plugins.touchid) {
-		  window.plugins.touchid.save("MyKey","My Password",function(){
-			   alert("Password saved");
-      });
-  }
-	
-  if (window.plugins.touchid) {
-		  window.plugins.touchid.delete("MyKey",function(){
-			   alert("Password key deleted");
-      });
-  }			
+```js
+if (window.plugins.touchid) {
+    window.plugins.touchid.isAvailable(function() {
+        window.plugins.touchid.has("MyKey", function() {
+            alert("Touch ID avaialble and Password key available");
+        }, function() {
+            alert("Touch ID available but no Password Key available");
+        });
+    }, function(msg) {
+        alert("no Touch ID available");
+    });
+}
+
+if (window.plugins.touchid) {
+    window.plugins.touchid.verify("MyKey", "My Message", function(password) {
+        alert("Tocuh " + password);
+    });
+}
+
+if (window.plugins.touchid) {
+    window.plugins.touchid.save("MyKey", "My Password", function() {
+        alert("Password saved");
+    });
+}
+
+if (window.plugins.touchid) {
+    window.plugins.touchid.delete("MyKey", function() {
+        alert("Password key deleted");
+    });
+}
 ```
 
