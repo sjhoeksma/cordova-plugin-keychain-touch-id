@@ -91,7 +91,7 @@ This invalid key is removed - user needs to **save their password again**.
 # Examples
 
 ```js
-if (window.plugins.touchid) {
+if (window.plugins) {
     window.plugins.touchid.isAvailable(function() {
         window.plugins.touchid.has("MyKey", function() {
             alert("Touch ID avaialble and Password key available");
@@ -103,19 +103,19 @@ if (window.plugins.touchid) {
     });
 }
 
-if (window.plugins.touchid) {
+if (window.plugins) {
     window.plugins.touchid.verify("MyKey", "My Message", function(password) {
         alert("Tocuh " + password);
     });
 }
 
-if (window.plugins.touchid) {
+if (window.plugins) {
     window.plugins.touchid.save("MyKey", "My Password", function() {
         alert("Password saved");
     });
 }
 
-if (window.plugins.touchid) {
+if (window.plugins) {
     window.plugins.touchid.delete("MyKey", function() {
         alert("Password key deleted");
     });
