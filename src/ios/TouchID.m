@@ -77,6 +77,14 @@
 -(void)delete:(CDVInvokedUrlCommand*)command{
 	 	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     @try {
+        
+        if(self.TAG && [[NSUserDefaults standardUserDefaults] objectForKey:self.TAG])
+        {
+            self.MyKeychainWrapper = [[KeychainWrapper alloc]init];
+            [self.MyKeychainWrapper resetKeychainItem];
+        }
+        
+
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:self.TAG];
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
