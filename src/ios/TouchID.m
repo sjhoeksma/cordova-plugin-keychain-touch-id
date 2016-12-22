@@ -32,7 +32,7 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
     else{
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Touch ID not availalbe"];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Touch ID not available"];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 }
@@ -77,13 +77,13 @@
 -(void)delete:(CDVInvokedUrlCommand*)command{
 	 	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     @try {
-        
+
         if(self.TAG && [[NSUserDefaults standardUserDefaults] objectForKey:self.TAG])
         {
             self.MyKeychainWrapper = [[KeychainWrapper alloc]init];
             [self.MyKeychainWrapper resetKeychainItem];
         }
-        
+
 
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:self.TAG];
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -113,12 +113,12 @@
 
                 if(success){
                     NSString *password = [self.MyKeychainWrapper myObjectForKey:@"v_Data"];
-									  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
+                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 if(error != nil) {
-										CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%li", error.code]];
-										[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%li", error.code]];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 });
             }];
