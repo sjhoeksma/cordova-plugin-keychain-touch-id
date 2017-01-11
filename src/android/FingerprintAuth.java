@@ -88,10 +88,16 @@ import org.json.JSONObject;
   private FingerprintManager mFingerPrintManager;
   private int mCurrentMode;
   private String mLangCode = "en_US";
+
   /**
    * String to encrypt
    */
   private String mToEncrypt;
+
+  /**
+   * Require the user to authenticate with a fingerprint to authorize every use of the key
+   */
+  private boolean setUserAuthenticationRequired = false;
 
   /**
    * Constructor.
@@ -103,7 +109,7 @@ import org.json.JSONObject;
    * Creates a symmetric key in the Android Key Store which can only be used after the user has
    * authenticated with fingerprint.
    */
-  public static boolean createKey() {
+  public static boolean createKey(final boolean setUserAuthenticationRequired) {
     String errorMessage = "";
     String createKeyExceptionErrorPrefix = "Failed to create key: ";
     boolean isKeyCreated = false;
@@ -114,12 +120,10 @@ import org.json.JSONObject;
       mKeyStore.load(null);
       // Set the alias of the entry in Android KeyStore where the key will appear
       // and the constrains (purposes) in the constructor of the Builder
-      mKeyGenerator.init(new KeyGenParameterSpec.Builder(mClientId,
+      mKeyGenerator.init(new KeyGenParameterSpec.Builder(CLIENT_ID,
           KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT).setBlockModes(
           KeyProperties.BLOCK_MODE_CBC)
-          // Require the user to authenticate with a fingerprint to authorize every use
-          // of the key
-          .setUserAuthenticationRequired(false)
+          .setUserAuthenticationRequired(setUserAuthenticationRequired)
           .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
           .build());
       mKeyGenerator.generateKey();
@@ -365,7 +369,8 @@ import org.json.JSONObject;
   }
 
   /**
-   * Initialize the {@link Cipher} instance with the created key in the {@link #createKey()}
+   * Initialize the {@link Cipher} instance with the created key in the
+   * {@link #createKey(boolean setUserAuthenticationRequired)}
    * method.
    *
    * @return {@code true} if initialization is successful, {@code false} if the lock screen has
@@ -477,8 +482,19 @@ import org.json.JSONObject;
           byte[] enc = Base64.decode(sharedPref.getString("fing" + mKeyID, ""), Base64.DEFAULT);
 
           byte[] decrypted = mCipher.doFinal(enc);
-          String decrString = new String(decrypted);
-          result = decrString;
+          result = new String(decrypted);
+        } else if (mCurrentMode == Cipher.ENCRYPT_MODE && setUserAuthenticationRequired) {
+          //If setUserAuthenticationRequired encript string with key after authenticate with fingerprint
+          SharedPreferences.Editor editor = sharedPref.edit();
+
+          byte[] enc = mCipher.doFinal(mToEncrypt.getBytes());
+          editor.putString("fing" + mKeyID, Base64.encodeToString(enc, Base64.DEFAULT));
+          editor.putString("fing_iv" + mKeyID,
+              Base64.encodeToString(mCipher.getIV(), Base64.DEFAULT));
+
+          editor.apply();
+          mToEncrypt = "";
+          result = "success";
         }
       }
     } catch (BadPaddingException e) {
