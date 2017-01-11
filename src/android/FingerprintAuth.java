@@ -47,10 +47,32 @@ import org.json.JSONObject;
   public static final String TAG = "FingerprintAuth";
   private static final String DIALOG_FRAGMENT_TAG = "FpAuthDialog";
   private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
+
+  // Plugin response codes and messages
+  private static final String OS = "OS";
+  private static final String ANDROID = "Android";
+  private static final String ERROR_CODE = "ErrorCode";
+  private static final String ERROR_MESSAGE = "ErrorMessage";
+  private static final String NO_SECRET_KEY_CODE = "-5";
+  private static final String NO_SECRET_MESSAGE = "Secret Key not set.";
+  private static final String NO_HARDWARE_CODE = "-6";
+  private static final String NO_HARDWARE_MESSAGE = "Biometry is not available on this device.";
+  private static final String NO_FINGERPRINT_ENROLLED_CODE = "-7";
+  private static final String NO_FINGERPRINT_ENROLLED_MESSAGE =
+      "No fingers are enrolled with Touch ID.";
+
+  // Plugin Javascript actions
+  private static final String SAVE = "save";
+  private static final String VERIFY = "verify";
+  private static final String IS_AVAILABLE = "isAvailable";
+  private static final String SET_LOCALE = "setLocale";
+  private static final String HAS = "has";
+  private static final String DELETE = "delete";
+
   /**
    * Alias for our key in the Android Key Store
    */
-  private final static String mClientId = "CordovaTouchPlugin";
+  private final static String CLIENT_ID = "CordovaTouchPlugin";
   public static String packageName;
   public static KeyStore mKeyStore;
   public static KeyGenerator mKeyGenerator;
@@ -188,148 +210,131 @@ import org.json.JSONObject;
     Log.v(TAG, "FingerprintAuth action: " + action);
     if (android.os.Build.VERSION.SDK_INT < 23) {
       Log.e(TAG, "minimum SDK version 23 required");
-      JSONObject resultJson = new JSONObject();
-      resultJson.put("OS", "Android");
-      resultJson.put("ErrorCode", "-6");
-      resultJson.put("ErrorMessage", "Biometry is not available on this device.");
-      mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-      mCallbackContext.error(resultJson.toString());
+
+      String errorMessage = createErrorMessage(NO_HARDWARE_CODE, NO_HARDWARE_MESSAGE);
+      mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
       mCallbackContext.sendPluginResult(mPluginResult);
       return true;
     }
-    if (action.equals("save")) {
+    if (action.equals(SAVE)) {
       final String key = args.getString(0);
       final String password = args.getString(1);
+      setUserAuthenticationRequired = args.get(2).equals(null) || args.getBoolean(2);
 
       if (isFingerprintAuthAvailable()) {
         SecretKey secretKey = getSecretKey();
-        boolean isCipherInit = true;
+
         if (secretKey == null) {
-          if (createKey()) {
-            secretKey = getSecretKey();
+          if (createKey(setUserAuthenticationRequired)) {
+            getSecretKey();
           }
         }
         mKeyID = key;
         mToEncrypt = password;
-        SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        if (initCipher(Cipher.ENCRYPT_MODE)) {
-          byte[] enc = new byte[0];
-          try {
-            enc = mCipher.doFinal(mToEncrypt.getBytes());
 
-            editor.putString("fing" + mKeyID, Base64.encodeToString(enc, Base64.DEFAULT));
-            editor.putString("fing_iv" + mKeyID, Base64.encodeToString(mCipher.getIV(), Base64.DEFAULT));
+        if (setUserAuthenticationRequired) {
+          showFingerprintDialog(Cipher.ENCRYPT_MODE, null);
+        } else {
+          SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
+          SharedPreferences.Editor editor = sharedPref.edit();
 
-            editor.apply();
-            mCallbackContext.success("Success");
-            mPluginResult = new PluginResult(PluginResult.Status.OK);
-            mCallbackContext.sendPluginResult(mPluginResult);
-            return true;
-          } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-            mCallbackContext.success("Error string is to big.");
-            mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-            mCallbackContext.sendPluginResult(mPluginResult);
-          } catch (BadPaddingException e) {
-            e.printStackTrace();
-            mCallbackContext.success("Error Bad Padding");
-            mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+          if (initCipher(Cipher.ENCRYPT_MODE)) {
+            byte[] enc = new byte[0];
+            try {
+              enc = mCipher.doFinal(mToEncrypt.getBytes());
+
+              editor.putString("fing" + mKeyID, Base64.encodeToString(enc, Base64.DEFAULT));
+              editor.putString("fing_iv" + mKeyID,
+                  Base64.encodeToString(mCipher.getIV(), Base64.DEFAULT));
+
+              editor.apply();
+              mPluginResult = new PluginResult(PluginResult.Status.OK);
+              mCallbackContext.sendPluginResult(mPluginResult);
+              return true;
+            } catch (IllegalBlockSizeException e) {
+              mPluginResult =
+                  new PluginResult(PluginResult.Status.ERROR, "Error string is to big.");
+            } catch (BadPaddingException e) {
+              mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Error Bad Padding.");
+            }
             mCallbackContext.sendPluginResult(mPluginResult);
           }
         }
       } else {
-        mCallbackContext.error("Fingerprint authentication not available");
-        mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-        mCallbackContext.sendPluginResult(mPluginResult);
+        String errorMessage = createErrorMessage(NO_HARDWARE_CODE, NO_HARDWARE_MESSAGE);
+        mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
       }
       return true;
-    } else if (action.equals("verify")) {
+    } else if (action.equals(VERIFY)) {
       final String key = args.getString(0);
       final String message = args.getString(1);
-
-      JSONObject resultJson = new JSONObject();
-      resultJson.put("OS", "Android");
-
       if (isHardwareDetected()) {
-        if (hasEnrolledFingerprints()){
+        if (hasEnrolledFingerprints()) {
           SecretKey secretKey = getSecretKey();
           if (secretKey != null) {
             mKeyID = key;
             showFingerprintDialog(Cipher.DECRYPT_MODE, message);
             mPluginResult.setKeepCallback(true);
           } else {
-            mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-            resultJson.put("ErrorCode", "-5");
-            resultJson.put("ErrorMessage", "Secret Key not set.");
-            mCallbackContext.error(resultJson.toString());
+            String errorMessage = createErrorMessage(NO_SECRET_KEY_CODE, NO_SECRET_MESSAGE);
+            mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
             mCallbackContext.sendPluginResult(mPluginResult);
           }
-        }
-        else{
-          resultJson.put("ErrorCode", "-7");
-          resultJson.put("ErrorMessage", "No fingers are enrolled with Touch ID.");
-          mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-          mCallbackContext.error(resultJson.toString());
+        } else {
+          String errorMessage =
+              createErrorMessage(NO_FINGERPRINT_ENROLLED_CODE, NO_FINGERPRINT_ENROLLED_MESSAGE);
+          mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
           mCallbackContext.sendPluginResult(mPluginResult);
         }
       } else {
-        resultJson.put("ErrorCode", "-6");
-        resultJson.put("ErrorMessage", "Biometry is not available on this device.");
-        mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-        mCallbackContext.error(resultJson.toString());
+        String errorMessage = createErrorMessage(NO_HARDWARE_CODE, NO_HARDWARE_MESSAGE);
+        mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
         mCallbackContext.sendPluginResult(mPluginResult);
       }
       return true;
-    } else if (action.equals("isAvailable")) {
-      JSONObject resultJson = new JSONObject();
-      resultJson.put("OS", "Android");
+    } else if (action.equals(IS_AVAILABLE)) {
       if (isHardwareDetected()) {
-        if (hasEnrolledFingerprints()){
-
+        if (hasEnrolledFingerprints()) {
           mPluginResult = new PluginResult(PluginResult.Status.OK);
-          mCallbackContext.success("YES");
-          mCallbackContext.sendPluginResult(mPluginResult);
-        }
-        else{
-          resultJson.put("ErrorCode", "-7");
-          resultJson.put("ErrorMessage", "No fingers are enrolled with Touch ID.");
-          mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-          mCallbackContext.error(resultJson.toString());
-          mCallbackContext.sendPluginResult(mPluginResult);
+        } else {
+          String errorMessage =
+              createErrorMessage(NO_FINGERPRINT_ENROLLED_CODE, NO_FINGERPRINT_ENROLLED_MESSAGE);
+          mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
         }
       } else {
-        resultJson.put("ErrorCode", "-6");
-        resultJson.put("ErrorMessage", "Biometry is not available on this device.");
-        mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-        mCallbackContext.error(resultJson.toString());
-        mCallbackContext.sendPluginResult(mPluginResult);
+        String errorMessage = createErrorMessage(NO_HARDWARE_CODE, NO_HARDWARE_MESSAGE);
+        mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
       }
+
+      mCallbackContext.sendPluginResult(mPluginResult);
       return true;
-    } else if (action.equals("setLocale")) {            // Set language
+    } else if (action.equals(SET_LOCALE)) {            // Set language
       mLangCode = args.getString(0);
       Resources res = cordova.getActivity().getResources();
+
       // Change locale settings in the app.
       DisplayMetrics dm = res.getDisplayMetrics();
+
       Configuration conf = res.getConfiguration();
       conf.locale = new Locale(mLangCode.toLowerCase());
+
       res.updateConfiguration(conf, dm);
       return true;
-    } else if (action.equals("has")) { //if has key
+    } else if (action.equals(HAS)) { //if has key
       String key = args.getString(0);
+
       SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
       String enc = sharedPref.getString("fing" + key, "");
+
       if (!enc.equals("")) {
         mPluginResult = new PluginResult(PluginResult.Status.OK);
-        mCallbackContext.success();
-        mCallbackContext.sendPluginResult(mPluginResult);
       } else {
         mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-        mCallbackContext.error("No pw available");
-        mCallbackContext.sendPluginResult(mPluginResult);
       }
+
+      mCallbackContext.sendPluginResult(mPluginResult);
       return true;
-    } else if (action.equals("delete")) { //delete key
+    } else if (action.equals(DELETE)) { //delete key
       final String key = args.getString(0);
       SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
       SharedPreferences.Editor editor = sharedPref.edit();
@@ -338,10 +343,8 @@ import org.json.JSONObject;
       boolean removed = editor.commit();
       if (removed) {
         mPluginResult = new PluginResult(PluginResult.Status.OK);
-        mCallbackContext.success();
       } else {
         mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-        mCallbackContext.error("Could not delete password");
       }
       mCallbackContext.sendPluginResult(mPluginResult);
       return true;
@@ -350,8 +353,7 @@ import org.json.JSONObject;
   }
 
   private boolean isFingerprintAuthAvailable() {
-    return isHardwareDetected()
-        && hasEnrolledFingerprints();
+    return isHardwareDetected() && hasEnrolledFingerprints();
   }
 
   private boolean isHardwareDetected() {
@@ -414,7 +416,7 @@ import org.json.JSONObject;
     SecretKey key = null;
     try {
       mKeyStore.load(null);
-      key = (SecretKey) mKeyStore.getKey(mClientId, null);
+      key = (SecretKey) mKeyStore.getKey(CLIENT_ID, null);
     } catch (KeyStoreException e) {
       errorMessage = getSecretKeyExceptionErrorPrefix + "KeyStoreException";
     } catch (CertificateException e) {
@@ -455,8 +457,7 @@ import org.json.JSONObject;
           mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
           mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
         } else {
-          mCallbackContext.error("Failed to init Cipher");
-          mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+          mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to init Cipher");
           mCallbackContext.sendPluginResult(mPluginResult);
         }
       }
@@ -481,31 +482,46 @@ import org.json.JSONObject;
         }
       }
     } catch (BadPaddingException e) {
-      errorMessage = "Failed to encrypt the data with the generated key:" +
-          " BadPaddingException:  " + e.getMessage();
+      errorMessage = "Failed to encrypt the data with the generated key:"
+          + " BadPaddingException:  "
+          + e.getMessage();
       Log.e(TAG, errorMessage);
     } catch (IllegalBlockSizeException e) {
-      errorMessage = "Failed to encrypt the data with the generated key: " +
-          "IllegalBlockSizeException: " + e.getMessage();
+      errorMessage = "Failed to encrypt the data with the generated key: "
+          + "IllegalBlockSizeException: "
+          + e.getMessage();
       Log.e(TAG, errorMessage);
     }
 
-    if (result != "") {
-      mCallbackContext.success(result);
-      mPluginResult = new PluginResult(PluginResult.Status.OK);
+    if (!result.equals("")) {
+      mPluginResult = new PluginResult(PluginResult.Status.OK, result);
+      mPluginResult.setKeepCallback(false);
     } else {
-      mCallbackContext.error(errorMessage);
-      mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+      mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
+      mPluginResult.setKeepCallback(false);
     }
     mCallbackContext.sendPluginResult(mPluginResult);
   }
 
   private void removePermanentlyInvalidatedKey() {
     try {
-      mKeyStore.deleteEntry(mClientId);
+      mKeyStore.deleteEntry(CLIENT_ID);
       Log.i(TAG, "Permanently invalidated key was removed.");
     } catch (KeyStoreException e) {
       Log.e(TAG, e.getMessage());
     }
+  }
+
+  private String createErrorMessage(final String errorCode, final String errorMessage) {
+    JSONObject resultJson = new JSONObject();
+    try {
+      resultJson.put(OS, ANDROID);
+      resultJson.put(ERROR_CODE, errorCode);
+      resultJson.put(ERROR_MESSAGE, errorMessage);
+      return resultJson.toString();
+    } catch (JSONException e) {
+      Log.e(TAG, e.getMessage());
+    }
+    return "";
   }
 }
