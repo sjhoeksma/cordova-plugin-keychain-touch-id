@@ -66,8 +66,9 @@ Call the function you like
 
 **isAvailable(successCallback, errorCallback(msg))** will Check if touchid is available on the used device 	
 	
-**save(key,password, successCallback, errorCallback(msg))** 
-will save a password under the key in the device keychain, which can be retrieved using a fingerprint
+**save(key,password, userAuthenticationRequired, successCallback, errorCallback(msg))** 
+will save a password under the key in the device keychain, which can be retrieved using a fingerprint. 
+userAuthenticationRequired if true will save after authentication with fingerprint, if false there's no need to authenticate to save. Default to true, if not set.
 
 **verify(key,message,successCallback(password), errorCallback(errorCode))**
 will open the fingerprint dialog, for the given key, showing an additional message.
@@ -94,7 +95,7 @@ This invalid key is removed - user needs to **save their password again**.
 if (window.plugins) {
     window.plugins.touchid.isAvailable(function() {
         window.plugins.touchid.has("MyKey", function() {
-            alert("Touch ID avaialble and Password key available");
+            alert("Touch ID available and Password key available");
         }, function() {
             alert("Touch ID available but no Password Key available");
         });
@@ -105,12 +106,12 @@ if (window.plugins) {
 
 if (window.plugins) {
     window.plugins.touchid.verify("MyKey", "My Message", function(password) {
-        alert("Tocuh " + password);
+        alert("Touch " + password);
     });
 }
 
 if (window.plugins) {
-    window.plugins.touchid.save("MyKey", "My Password", function() {
+    window.plugins.touchid.save("MyKey", "My Password", true, function() {
         alert("Password saved");
     });
 }
