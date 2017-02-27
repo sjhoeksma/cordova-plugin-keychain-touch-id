@@ -16,6 +16,7 @@
 
 package com.cordova.plugin.android.fingerprintauth;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -33,6 +34,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.cordova.CordovaInterface;
 
 /**
  * A dialog which uses fingerprint APIs to authenticate the user, and falls back to password
@@ -52,7 +55,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     private KeyguardManager mKeyguardManager;
     private FingerprintManager.CryptoObject mCryptoObject;
     private FingerprintUiHelper mFingerprintUiHelper;
-    private FingerprintAuth mFingerPrintAuth;
+    private FingerprintAuthAux mFingerPrintAuth;
     FingerprintUiHelper.FingerprintUiHelperBuilder mFingerprintUiHelperBuilder;
 
     public FingerprintAuthenticationDialogFragment() {
@@ -180,7 +183,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS) {
             // Challenge completed, proceed with using cipher
-            if (resultCode == getActivity().RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) {
                 mFingerPrintAuth.onAuthenticated(false /* used backup */);
             } else {
                 // The user canceled or didn’t complete the lock screen
@@ -210,11 +213,11 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         FingerprintAuth.onCancelled();
     }
 
-    public FingerprintAuth getmFingerPrintAuth() {
+    public FingerprintAuthAux getmFingerPrintAuth() {
         return mFingerPrintAuth;
     }
 
-    public void setmFingerPrintAuth(FingerprintAuth mFingerPrintAuth) {
+    public void setmFingerPrintAuth(FingerprintAuthAux mFingerPrintAuth) {
         this.mFingerPrintAuth = mFingerPrintAuth;
     }
 
