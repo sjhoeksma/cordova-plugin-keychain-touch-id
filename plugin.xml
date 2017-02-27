@@ -45,6 +45,7 @@
         </config-file>
 
         <source-file src="src/android/FingerprintAuth.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
+        <source-file src="src/android/FingerprintAuthAux.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="src/android/FingerprintAuthenticationDialogFragment.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="src/android/FingerprintUiHelper.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="res/android/drawable/ic_fingerprint_error.xml" target-dir="res/drawable" />
