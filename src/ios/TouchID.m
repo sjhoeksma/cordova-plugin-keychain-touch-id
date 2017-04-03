@@ -56,8 +56,15 @@
 }
 
 - (void)save:(CDVInvokedUrlCommand*)command{
-	 	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
-    NSString* password = (NSString*)[command.arguments objectAtIndex:1];
+    self.TAG = (NSString*)[command.arguments objectAtIndex:0];
+    NSObject* o = [command.arguments objectAtIndex:1];
+    NSString* password;
+    if ([o isKindOfClass:[NSDictionary class]]) {
+        password = [((NSDictionary*) o) objectForKey:@"password"];
+    }
+    else {
+        password = (NSString *) o;
+    }
     @try {
         self.MyKeychainWrapper = [[KeychainWrapper alloc]init];
         [self.MyKeychainWrapper mySetObject:password forKey:(__bridge id)(kSecValueData)];
@@ -98,11 +105,20 @@
 }
 
 -(void)verify:(CDVInvokedUrlCommand*)command{
-	 	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
-	  NSString* message = (NSString*)[command.arguments objectAtIndex:1];
+    self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     self.laContext = [[LAContext alloc] init];
     self.MyKeychainWrapper = [[KeychainWrapper alloc]init];
 
+    NSObject* o = [command.arguments objectAtIndex:1];
+    NSString* message;
+    if ([o isKindOfClass:[NSDictionary class]]) {
+        message = [((NSDictionary*) o) objectForKey:@"message"];
+    }
+    else {
+        message = (NSString *) o;
+    }
+    
+    
     BOOL hasLoginKey = [[NSUserDefaults standardUserDefaults] boolForKey:self.TAG];
     if(hasLoginKey){
         BOOL touchIDAvailable = [self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
@@ -113,12 +129,12 @@
 
                 if(success){
                     NSString *password = [self.MyKeychainWrapper myObjectForKey:@"v_Data"];
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
+									  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 if(error != nil) {
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%li", error.code]];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+										CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%li", error.code]];
+										[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 });
             }];
