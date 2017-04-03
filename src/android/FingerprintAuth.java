@@ -36,6 +36,7 @@ import java.security.SecureRandom;
 import java.security.UnrecoverableEntryException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Iterator;
 import java.util.Locale;
 
 import javax.crypto.BadPaddingException;
@@ -153,9 +154,19 @@ public class FingerprintAuth extends CordovaPlugin {
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
         }
+
+
         if (action.equals("save")) {
             final String key = args.getString(0);
-            final String password = args.getString(1);
+
+            // second argument could be object or string
+            String password;
+            try {
+                JSONObject obj = args.getJSONObject(1);
+                password = obj.getString("password");
+            } catch (JSONException e) {
+                password = args.getString(1);
+            }
 
             if (isFingerprintAuthAvailable()) {
                 SecretKey secretKey = getSecretKey();
@@ -167,7 +178,9 @@ public class FingerprintAuth extends CordovaPlugin {
                 }
                 mKeyID = key;
                 mToEncrypt = password;
-                showFingerprintDialog(Cipher.ENCRYPT_MODE,null);
+                Bundle options = extractOptions(args, 1, false);
+                options.putInt("dialogMode", Cipher.ENCRYPT_MODE);
+                showFingerprintDialog(Cipher.ENCRYPT_MODE, options);
 
                 return true;
             } else {
@@ -178,14 +191,15 @@ public class FingerprintAuth extends CordovaPlugin {
             return true;
         } else if (action.equals("verify")) {
             final String key = args.getString(0);
-            final String message = args.getString(1);
 
             if (isFingerprintAuthAvailable()) {
                 SecretKey secretKey = getSecretKey();
 
                 if (secretKey != null) {
                     mKeyID = key;
-                    showFingerprintDialog(Cipher.DECRYPT_MODE,message);
+                    Bundle options = extractOptions(args, 1, true);
+                    options.putInt("dialogMode", Cipher.DECRYPT_MODE);
+                    showFingerprintDialog(Cipher.DECRYPT_MODE, options);
                     mPluginResult.setKeepCallback(true);
                 } else {
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR);
@@ -252,6 +266,28 @@ public class FingerprintAuth extends CordovaPlugin {
             return true;
         }
         return false;
+    }
+
+    private Bundle extractOptions(JSONArray args, int index, boolean isDialogMessageRequired) throws JSONException {
+        JSONObject options;
+        try {
+            options = args.getJSONObject(index);
+        } catch (JSONException e) {
+            options = new JSONObject();
+            if (isDialogMessageRequired) {
+                options.put("dialogMessage", args.getString(1));
+            }
+        }
+
+        // convert to map:
+        Iterator<String> keys = options.keys();
+        Bundle bundle = new Bundle();
+        while (keys.hasNext()) {
+            String k = keys.next();
+            bundle.putString(k, (String) options.get(k));
+        }
+
+        return bundle;
     }
 
     private boolean isFingerprintAuthAvailable() {
@@ -383,7 +419,7 @@ public class FingerprintAuth extends CordovaPlugin {
         return isKeyCreated;
     }
 
-    public void showFingerprintDialog(final int mode, final String message){
+    public void showFingerprintDialog(final int mode, final Bundle options){
         final FingerprintAuth auth = this;
         mCurrentMode = mode;
         cordova.getActivity().runOnUiThread(new Runnable() {
@@ -391,10 +427,7 @@ public class FingerprintAuth extends CordovaPlugin {
                 // Set up the crypto object for later. The object will be authenticated by use
                 // of the fingerprint.
                 mFragment = new FingerprintAuthenticationDialogFragment();
-                Bundle bundle = new Bundle();
-                bundle.putInt("dialogMode", mode);
-                bundle.putString("dialogMessage",message);
-                mFragment.setArguments(bundle);
+                mFragment.setArguments(options);
                 mFragment.setmFingerPrintAuth(auth);
 
                 if (initCipher(mode)) {

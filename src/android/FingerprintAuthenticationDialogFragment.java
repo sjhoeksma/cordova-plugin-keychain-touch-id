@@ -68,7 +68,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
         mKeyguardManager = (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
         mFingerprintUiHelperBuilder = new FingerprintUiHelper.FingerprintUiHelperBuilder(
-                getContext(), getContext().getSystemService(FingerprintManager.class));
+                getContext(), getContext().getSystemService(FingerprintManager.class), getArguments());
 
     }
 
@@ -77,22 +77,24 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
                              Bundle savedInstanceState) {
         Bundle args = getArguments();
         int dialogMode = args.getInt("dialogMode");
-        String message = args.getString("dialogMessage");
         Log.d(TAG, "dialogMode: " + dialogMode);
 
-        int fingerprint_auth_dialog_title_id = getResources()
-                .getIdentifier("fingerprint_auth_dialog_title", "string",
-                        FingerprintAuth.packageName);
-        getDialog().setTitle(getString(fingerprint_auth_dialog_title_id));
-        int fingerprint_dialog_container_id = getResources()
-                .getIdentifier("fingerprint_dialog_container", "layout",
-                        FingerprintAuth.packageName);
-        View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
-        int cancel_button_id = getResources()
-                .getIdentifier("cancel_button", "id", FingerprintAuth.packageName);
+        String title = args.getString("dialogTitle");
+        if (title == null) {
+            int fingerprint_auth_dialog_title_id = getResources()
+                    .getIdentifier("fingerprint_auth_dialog_title", "string", FingerprintAuth.packageName);
+            title = getString(fingerprint_auth_dialog_title_id);
+        }
+        getDialog().setTitle(title);
 
-        TextView description =  (TextView) v.findViewById(getResources()
-                .getIdentifier("fingerprint_description", "id", FingerprintAuth.packageName));
+
+        int fingerprint_dialog_container_id = getResources()
+                .getIdentifier("fingerprint_dialog_container", "layout", FingerprintAuth.packageName);
+        View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
+        int cancel_button_id = getResources().getIdentifier("cancel_button", "id", FingerprintAuth.packageName);
+
+        String message = args.getString("dialogMessage");
+        TextView description = (TextView) v.findViewById(getResources().getIdentifier("fingerprint_description", "id", FingerprintAuth.packageName));
         description.setText(message);
         mCancelButton = (Button) v.findViewById(cancel_button_id);
         mCancelButton.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +104,15 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
                 dismiss();
             }
         });
+
+        TextView statusView = (TextView) v.findViewById(getResources().getIdentifier("fingerprint_status", "id", FingerprintAuth.packageName));
+        String hint = args.getString("dialogHint");
+        if (hint == null) {
+            int fingerprint_auth_dialog_hint_id = getResources().getIdentifier("fingerprint_hint", "string", FingerprintAuth.packageName);
+            hint = getString(fingerprint_auth_dialog_hint_id);
+        }
+        statusView.setText(hint);
+
 
         int fingerprint_container_id = getResources()
                 .getIdentifier("fingerprint_container", "id", FingerprintAuth.packageName);
@@ -157,11 +168,16 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
 
     private void updateStage() {
-        int cancel_id = getResources()
-                .getIdentifier("cancel", "string", FingerprintAuth.packageName);
         switch (mStage) {
             case FINGERPRINT:
-                mCancelButton.setText(cancel_id);
+                Bundle args = getArguments();
+                if (args.containsKey("dialogCancel") && args.getString("dialogCancel") != null) {
+                    mCancelButton.setText(args.getString("dialogCancel"));
+                } else {
+                    int cancel_id = getResources().getIdentifier("cancel", "string", FingerprintAuth.packageName);
+                    mCancelButton.setText(cancel_id);
+                }
+
                 mFingerprintContent.setVisibility(View.VISIBLE);
                 break;
         }
