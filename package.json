@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-keychain-touch-id",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Scan the fingerprint of your user with the TouchID sensor (iPhone 5S, iPhone 6(S), ..) and control a key in the Keychain",
   "cordova": {
     "id": "cordova-plugin-keychain-touch-id",

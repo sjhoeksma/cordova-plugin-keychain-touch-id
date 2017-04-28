@@ -55,6 +55,7 @@ public class FingerprintAuthAux {
     public static final String TAG = "FingerprintAuth";
     private static final String DIALOG_FRAGMENT_TAG = "FpAuthDialog";
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
+    private static final String SHARED_PREFS_NAME = "FingerSPref";
 
     // Plugin response codes and messages
     private static final String OS = "OS";
@@ -249,7 +250,7 @@ public class FingerprintAuthAux {
                 if (setUserAuthenticationRequired) {
                     showFingerprintDialog(Cipher.ENCRYPT_MODE, null, cordova);
                 } else {
-                    SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences sharedPref = cordova.getActivity().getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME,Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
 
                     if (initCipher(Cipher.ENCRYPT_MODE, cordova)) {
@@ -337,7 +338,7 @@ public class FingerprintAuthAux {
         } else if (action.equals(HAS)) { //if has key
             String key = args.getString(0);
 
-            SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = cordova.getActivity().getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME,Context.MODE_PRIVATE);
             String enc = sharedPref.getString("fing" + key, "");
 
             if (!enc.equals("")) {
@@ -350,7 +351,7 @@ public class FingerprintAuthAux {
             return true;
         } else if (action.equals(DELETE)) { //delete key
             final String key = args.getString(0);
-            SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = cordova.getActivity().getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME,Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.remove("fing" + key);
             editor.remove("fing_iv" + key);
@@ -360,6 +361,29 @@ public class FingerprintAuthAux {
             } else {
                 mPluginResult = new PluginResult(PluginResult.Status.ERROR);
             }
+            mCallbackContext.sendPluginResult(mPluginResult);
+            return true;
+        } else if (action.equals(MOVE)) { //Move shared preferences from activity to global
+            String key = args.getString(0);
+            String oldActivityPackageName = args.getString(1);
+            //Get old shared Preferences e.g: "com.outsystems.android.WebApplicationActivity"
+            SharedPreferences oldSharedPref = cordova.getActivity().getApplicationContext().getSharedPreferences(oldActivityPackageName,Context.MODE_PRIVATE);
+            String enc = oldSharedPref.getString("fing" + key, "");
+            
+            if (!enc.equals("")) {
+                SharedPreferences newSharedPref = cordova.getActivity().getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME,Context.MODE_PRIVATE);
+                SharedPreferences.Editor newEditor = newSharedPref.edit();
+                newEditor.putString("fing" + key, oldSharedPref.getString("fing" + key, ""));
+                newEditor.putString("fing_iv" + key, oldSharedPref.getString("fing" + key, ""));
+                newEditor.apply();
+                
+                SharedPreferences.Editor oldEditor = oldSharedPref.edit();
+                oldEditor.remove("fing" + key);
+                oldEditor.remove("fing_iv" + key);
+                oldEditor.commit();
+            }
+            
+            mPluginResult = new PluginResult(PluginResult.Status.OK);
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
         }
@@ -409,7 +433,7 @@ public class FingerprintAuthAux {
 
                 mCipher.init(mode, key);
             } else {
-                SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = cordova.getActivity().getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME,Context.MODE_PRIVATE);
                 byte[] ivBytes =
                         Base64.decode(sharedPref.getString("fing_iv" + mKeyID, ""), Base64.DEFAULT);
 
@@ -496,7 +520,7 @@ public class FingerprintAuthAux {
             if (withFingerprint) {
                 // If the user has authenticated with fingerprint, verify that using cryptography and
                 // then return the encrypted token
-                SharedPreferences sharedPref = cordova.getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = cordova.getActivity().getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME,Context.MODE_PRIVATE);
                 if (mCurrentMode == Cipher.DECRYPT_MODE) {
                     byte[] enc = Base64.decode(sharedPref.getString("fing" + mKeyID, ""), Base64.DEFAULT);
 
