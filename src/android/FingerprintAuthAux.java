@@ -77,6 +77,7 @@ public class FingerprintAuthAux {
     private static final String SET_LOCALE = "setLocale";
     private static final String HAS = "has";
     private static final String DELETE = "delete";
+    private static final String MOVE = "move";
 
     /**
      * Alias for our key in the Android Key Store
