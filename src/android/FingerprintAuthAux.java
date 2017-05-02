@@ -376,7 +376,7 @@ public class FingerprintAuthAux {
                 SharedPreferences.Editor newEditor = newSharedPref.edit();
                 newEditor.putString("fing" + key, oldSharedPref.getString("fing" + key, ""));
                 newEditor.putString("fing_iv" + key, oldSharedPref.getString("fing" + key, ""));
-                newEditor.apply();
+                newEditor.commit();
                 
                 SharedPreferences.Editor oldEditor = oldSharedPref.edit();
                 oldEditor.remove("fing" + key);
@@ -536,7 +536,7 @@ public class FingerprintAuthAux {
                     editor.putString("fing_iv" + mKeyID,
                             Base64.encodeToString(mCipher.getIV(), Base64.DEFAULT));
 
-                    editor.apply();
+                    editor.commit();
                     mToEncrypt = "";
                     result = "success";
                 }
