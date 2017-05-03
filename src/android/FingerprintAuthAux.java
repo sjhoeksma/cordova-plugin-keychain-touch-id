@@ -375,7 +375,7 @@ public class FingerprintAuthAux {
                 SharedPreferences newSharedPref = cordova.getActivity().getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME,Context.MODE_PRIVATE);
                 SharedPreferences.Editor newEditor = newSharedPref.edit();
                 newEditor.putString("fing" + key, oldSharedPref.getString("fing" + key, ""));
-                newEditor.putString("fing_iv" + key, oldSharedPref.getString("fing" + key, ""));
+                newEditor.putString("fing_iv" + key, oldSharedPref.getString("fing_iv" + key, ""));
                 newEditor.commit();
                 
                 SharedPreferences.Editor oldEditor = oldSharedPref.edit();
