@@ -19,6 +19,9 @@ var touchid = {
 	},
 	setLocale: function(locale,successCallback, errorCallback){
 		exec(successCallback, errorCallback, "TouchID", "setLocale", [locale]);
+	},
+	didFingerprintDatabaseChange: function (successCallback, errorCallback) {
+		exec(successCallback, errorCallback, "TouchID", "didFingerprintDatabaseChange", []);
 	}
 };
 
