@@ -22,6 +22,8 @@
 #include <sys/sysctl.h>
 #import <Cordova/CDV.h>
 
+static NSString *const FingerprintDatabaseStateKey = @"FingerprintDatabaseStateKey";
+
 @implementation TouchID
 
 - (void)isAvailable:(CDVInvokedUrlCommand*)command{
