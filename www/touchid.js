@@ -22,8 +22,10 @@ var touchid = {
 	},
 	move: function(key, packageName,successCallback, errorCallback){
     	exec(successCallback, errorCallback, "TouchID", "move", [key,packageName]);
-    }
-
+    },
+	didFingerprintDatabaseChange: function (successCallback, errorCallback) {
+		exec(successCallback, errorCallback, "TouchID", "didFingerprintDatabaseChange", []);
+	}
 };
 
 module.exports = touchid;
