@@ -26,14 +26,22 @@
 
 - (void)isAvailable:(CDVInvokedUrlCommand*)command{
     self.laContext = [[LAContext alloc] init];
-    BOOL touchIDAvailable = [self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+    NSError *error = nil;
+    BOOL touchIDAvailable = [self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
     if(touchIDAvailable){
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
     else{
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Touch ID not available"];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        if(error.code == -7){
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"No FP available"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+        if(error.code == -6){
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"No hardware available"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+
     }
 }
 
@@ -77,14 +85,6 @@
 -(void)delete:(CDVInvokedUrlCommand*)command{
 	 	self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     @try {
-
-        if(self.TAG && [[NSUserDefaults standardUserDefaults] objectForKey:self.TAG])
-        {
-            self.MyKeychainWrapper = [[KeychainWrapper alloc]init];
-            [self.MyKeychainWrapper resetKeychainItem];
-        }
-
-
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:self.TAG];
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -113,12 +113,12 @@
 
                 if(success){
                     NSString *password = [self.MyKeychainWrapper myObjectForKey:@"v_Data"];
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
+									  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 if(error != nil) {
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%li", error.code]];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+										CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%li", error.code]];
+										[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
                 });
             }];
