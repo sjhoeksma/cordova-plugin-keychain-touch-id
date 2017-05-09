@@ -205,10 +205,14 @@ public class FingerprintAuth extends CordovaPlugin {
                 mPluginResult = new PluginResult(PluginResult.Status.OK);
                 mCallbackContext.success("YES");
                 mCallbackContext.sendPluginResult(mPluginResult);
-            } else {
+            } else if (isFingerprintHardwareDetected()) {
                 mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                mCallbackContext.error("No FP availabile");
+                mCallbackContext.error("No FP available");
                 mCallbackContext.sendPluginResult(mPluginResult);
+            } else {
+              mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+              mCallbackContext.error("No hardware available");
+              mCallbackContext.sendPluginResult(mPluginResult);
             }
             return true;
         } else if (action.equals("setLocale")) {            // Set language
@@ -256,6 +260,10 @@ public class FingerprintAuth extends CordovaPlugin {
 
     private boolean isFingerprintAuthAvailable() {
         return mFingerPrintManager.isHardwareDetected() && mFingerPrintManager.hasEnrolledFingerprints();
+    }
+
+    private boolean isFingerprintHardwareDetected() {
+        return mFingerPrintManager.isHardwareDetected();
     }
 
     /**
