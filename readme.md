@@ -45,6 +45,7 @@ Click your project, Build Phases, Link Binary With Libraries, search for and add
 iOS: Copy the four `.h` and two `.m` files to `platforms/ios/<ProjectName>/Plugins`
 
 ### Base on the original touch ID created by different people
+* https://github.com/sjhoeksma/cordova-plugin-keychain-touch-id
 * https://github.com/EddyVerbruggen/cordova-plugin-touch-id
 * https://github.com/kunder-lab/kunder-touchid-keychain
 * https://github.com/PeerioTechnologies/peerio-keychain-touchid
@@ -66,26 +67,39 @@ Call the function you like
 
 **isAvailable(successCallback, errorCallback(msg))** will Check if touchid is available on the used device 	
 	
-**save(key,password, successCallback, errorCallback(msg))** 
+**saveKey(key,password, successCallback, errorCallback(msg))**
 will save a password under the key in the device keychain, which can be retrieved using a fingerprint
 
-**verify(key,message,successCallback(password), errorCallback(errorCode))**
+**verifyKey(key,message,successCallback(password), errorCallback(errorCode))**
 will open the fingerprint dialog, for the given key, showing an additional message.
 successCallback will return the password stored in key chain.
 errorCallback will return the error code, where -1 indicated not available.
 
-**has(key,successCallback, errorCallback)**
+**hasKey(key,successCallback, errorCallback)**
 will check if there is a password stored within the keychain for the given key
 
-**delete(key,successCallback, errorCallback)**
+**deleteKey(key,successCallback, errorCallback)**
 will delete the password stored under given key from the keychain
+
+**didFingerprintDatabaseChange(successCallback, errorCallback)**
+IOS ONLY! checks fingerprint database and returns whether it has been modified or not
+
+
+## Security++
+Since iOS9 it's possible to check whether or not the list of enrolled fingerprints changed since
+the last time you checked it. It's recommended you add this check so you can counter hacker attacks
+to your app. See [this article](https://godpraksis.no/2016/03/fingerprint-trojan/) for more details.
+
+So instead of checking the fingerprint after `isAvailable` add another check.
+In case `didFingerprintDatabaseChange` returns `true` you probably want to re-authenticate your user
+before accepting valid fingerprints again.
 
 ## Android quirks
 
 When a new fingerprint is enrolled, no more fingerprints are enrolled, secure lock screen is disabled or forcibly reset,
 the key which is used to hash the password is permanently invalidated. It cannot be used anymore.
 
-`verify` and `save` functions will return the `"KeyPermanentlyInvalidatedException"` message in the error callback.
+`verifyKey` and `saveKey` functions will return the `"KeyPermanentlyInvalidatedException"` message in the error callback.
 This invalid key is removed - user needs to **save their password again**.
 
 # Examples
@@ -93,7 +107,7 @@ This invalid key is removed - user needs to **save their password again**.
 ```js
 if (window.plugins) {
     window.plugins.touchid.isAvailable(function() {
-        window.plugins.touchid.has("MyKey", function() {
+        window.plugins.touchid.hasKey("MyKey", function() {
             alert("Touch ID avaialble and Password key available");
         }, function() {
             alert("Touch ID available but no Password Key available");
@@ -104,19 +118,19 @@ if (window.plugins) {
 }
 
 if (window.plugins) {
-    window.plugins.touchid.verify("MyKey", "My Message", function(password) {
+    window.plugins.touchid.verifyKey("MyKey", "My Message", function(password) {
         alert("Tocuh " + password);
     });
 }
 
 if (window.plugins) {
-    window.plugins.touchid.save("MyKey", "My Password", function() {
+    window.plugins.touchid.saveKey("MyKey", "My Password", function() {
         alert("Password saved");
     });
 }
 
 if (window.plugins) {
-    window.plugins.touchid.delete("MyKey", function() {
+    window.plugins.touchid.deleteKey("MyKey", function() {
         alert("Password key deleted");
     });
 }
