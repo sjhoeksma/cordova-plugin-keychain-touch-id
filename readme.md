@@ -109,8 +109,9 @@ if (window.plugins) {
     });
 }
 
+// NOTE: Message will show only on android. iOS does not request touchId for save.
 if (window.plugins) {
-    window.plugins.touchid.save("MyKey", "My Password", function() {
+    window.plugins.touchid.save("MyKey", "My Password", "My Message", function() {
         alert("Password saved");
     });
 }
