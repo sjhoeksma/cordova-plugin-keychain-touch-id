@@ -1,0 +1,29 @@
+ fpauth-strings.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License
+  -->
+<resources>
+    <string name="cancel">Annuler</string>
+    <string name="use_backup">Utilisez une sauvegarde</string>
+    <string name="fingerprint_auth_dialog_title">Authentification avec l'empreinte digitale</string>
+    <string name="ok">Ok</string>
+    <string name="fingerprint_description">Confirmez l'empreinte digitale pour continuer</string>
+    <string name="fingerprint_hint">Capteur d'empreinte </string>
+    <string name="fingerprint_not_recognized">L'empreinte digitale n'est pas reconnue. Réessayer.</string>
+    <string name="fingerprint_success">Empreinte digitale reconnue</string>
+    <string name="new_fingerprint_enrolled_description">Une nouvelle empreinte digitale a été ajoutée à ce périphérique, Votre mot de passe est requis.</string>
+</resources>
