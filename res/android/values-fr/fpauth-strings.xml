@@ -17,11 +17,11 @@
 <resources>
     <string name="cancel">Annuler</string>
     <string name="use_backup">Utilisez une sauvegarde</string>
-    <string name="fingerprint_auth_dialog_title">Authentification avec l'empreinte digitale</string>
+    <string name="fingerprint_auth_dialog_title">Authentification avec l\'empreinte digitale</string>
     <string name="ok">Ok</string>
-    <string name="fingerprint_description">Confirmez l'empreinte digitale pour continuer</string>
-    <string name="fingerprint_hint">Capteur d'empreinte </string>
-    <string name="fingerprint_not_recognized">L'empreinte digitale n'est pas reconnue. Réessayer.</string>
+    <string name="fingerprint_description">Confirmez l\'empreinte digitale pour continuer</string>
+    <string name="fingerprint_hint">Capteur d\'empreinte </string>
+    <string name="fingerprint_not_recognized">L\'empreinte digitale n\'est pas reconnue. Réessayer.</string>
     <string name="fingerprint_success">Empreinte digitale reconnue</string>
     <string name="new_fingerprint_enrolled_description">Une nouvelle empreinte digitale a été ajoutée à ce périphérique, Votre mot de passe est requis.</string>
 </resources>
