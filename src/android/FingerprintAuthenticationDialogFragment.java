@@ -99,7 +99,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
             @Override
             public void onClick(View view) {
                 FingerprintAuth.onCancelled();
-                dismiss();
+                dismissAllowingStateLoss();
             }
         });
 
@@ -187,7 +187,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
                 // operation. Go to error/cancellation flow.
                 FingerprintAuth.onCancelled();
             }
-            dismiss();
+            dismissAllowingStateLoss();
         }
     }
 
@@ -196,7 +196,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         // Callback from FingerprintUiHelper. Let the activity know that authentication was
         // successful.
         mFingerPrintAuth.onAuthenticated(true /* withFingerprint */);
-        dismiss();
+        dismissAllowingStateLoss();
     }
 
     @Override

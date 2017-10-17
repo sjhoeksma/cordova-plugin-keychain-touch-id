@@ -205,10 +205,14 @@ public class FingerprintAuth extends CordovaPlugin {
                 mPluginResult = new PluginResult(PluginResult.Status.OK);
                 mCallbackContext.success("YES");
                 mCallbackContext.sendPluginResult(mPluginResult);
-            } else {
+            } else if (isFingerprintHardwareDetected()) {
                 mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                mCallbackContext.error("No FP availabile");
+                mCallbackContext.error("No FP available");
                 mCallbackContext.sendPluginResult(mPluginResult);
+            } else {
+              mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+              mCallbackContext.error("No hardware available");
+              mCallbackContext.sendPluginResult(mPluginResult);
             }
             return true;
         } else if (action.equals("setLocale")) {            // Set language
@@ -256,6 +260,10 @@ public class FingerprintAuth extends CordovaPlugin {
 
     private boolean isFingerprintAuthAvailable() {
         return mFingerPrintManager.isHardwareDetected() && mFingerPrintManager.hasEnrolledFingerprints();
+    }
+
+    private boolean isFingerprintHardwareDetected() {
+        return mFingerPrintManager.isHardwareDetected();
     }
 
     /**
@@ -402,8 +410,13 @@ public class FingerprintAuth extends CordovaPlugin {
                     // Show the fingerprint dialog. The user has the option to use the fingerprint with
                     // crypto, or you can fall back to using a server-side verified password.
                     mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-                    mFragment.show(cordova.getActivity()
-                            .getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                    try {
+                            mFragment.show(cordova.getActivity()
+                                                       .getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                        }
+                        catch (IllegalStateException ignored) {
+                            Log.i(TAG, "Application is running in the background, fingerprint dialog cannot be shown");
+                        }
                 } else {
                     mCallbackContext.error("Failed to init Cipher");
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR);
