@@ -65,6 +65,12 @@ if (window.plugins.touchid) {
 Call the function you like
 
 **isAvailable(successCallback, errorCallback(msg))** will Check if touchid is available on the used device 	
+
+**biometricType(successCallback(msg), errorCallback(msg))** 
+assumes that isAvailabe has been called
+returns FACE, TOUCH, UNKNOWN for biometric type
+currently implemented for ios.  andoird support to come later.
+iphone X
 	
 **save(key,password, successCallback, errorCallback(msg))** 
 will save a password under the key in the device keychain, which can be retrieved using a fingerprint
