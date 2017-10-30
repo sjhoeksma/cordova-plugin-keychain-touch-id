@@ -68,8 +68,8 @@ Call the function you like
 
 **biometricType(successCallback(msg), errorCallback(msg))** 
 assumes that isAvailabe has been called
-returns FACE, TOUCH, UNKNOWN for biometric type
-currently implemented for ios.  andoird support to come later.
+returns FACE, TOUCH, NONE for biometric type
+currently implemented for ios.  android api currently returns NONE. 
 iphone X
 	
 **save(key,password, successCallback, errorCallback(msg))** 
