@@ -211,6 +211,16 @@ public class FingerprintAuth extends CordovaPlugin {
                 mCallbackContext.sendPluginResult(mPluginResult);
             }
             return true;
+        }  else if (action.equals("biometricType")) {
+            mPluginResult = new PluginResult(PluginResult.Status.OK);
+            if (isFingerprintAuthAvailable()) {
+                mCallbackContext.success("TOUCH");
+            }
+            else {
+                mCallbackContext.success("NONE");
+            }
+            mCallbackContext.sendPluginResult(mPluginResult);
+            return true;
         } else if (action.equals("setLocale")) {            // Set language
             mLangCode = args.getString(0);
             Resources res = cordova.getActivity().getResources();
