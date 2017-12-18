@@ -64,9 +64,9 @@ if (window.plugins.touchid) {
 
 Call the function you like
 
-**isAvailable(successCallback, errorCallback(msg))** will Check if touchid is available on the used device 	
-	
-**save(key,password, userAuthenticationRequired, successCallback, errorCallback(msg))** 
+**isAvailable(successCallback(biometryType), errorCallback(msg))** will Check if touchid is available on the used device. The `successCallback` gets the `biometryType` argument with 'face' on iPhone X, 'touch' on other devices.
+
+**save(key,password, successCallback, errorCallback(msg))**
 will save a password under the key in the device keychain, which can be retrieved using a fingerprint. 
 userAuthenticationRequired if true will save after authentication with fingerprint, if false there's no need to authenticate to save. Default to true, if not set.
 
@@ -93,15 +93,16 @@ This invalid key is removed - user needs to **save their password again**.
 
 ```js
 if (window.plugins) {
-    window.plugins.touchid.isAvailable(function() {
-        window.plugins.touchid.has("MyKey", function() {
-            alert("Touch ID available and Password key available");
-        }, function() {
-            alert("Touch ID available but no Password Key available");
-        });
-    }, function(msg) {
-        alert("no Touch ID available");
-    });
+window.plugins.touchid.isAvailable(function(biometryType) {
+var serviceName = (biometryType === "face") ? "Face ID" : "Touch ID";
+window.plugins.touchid.has("MyKey", function() {
+alert(serviceName + " avaialble and Password key available");
+}, function() {
+alert(serviceName + " available but no Password Key available");
+});
+}, function(msg) {
+alert("no Touch ID available");
+});
 }
 
 if (window.plugins) {
