@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="cordova-plugin-keychain-touch-id"
+        id="cordova-plugin-keychain-touch-id-ios"
 		version="3.2.1">
     <name>TouchID and Keychain</name>
 	  <author>S.J.Hoeksma</author>
