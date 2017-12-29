@@ -4,6 +4,8 @@
 
 A cordova plugin adding the iOS TouchID to your app and allowing you to store a password securely in the device keychain.
 
+This fork removes the Android code. It is specifically for users who already have a separate Android Fingerprint plugin installed, and using the original version of this plugin would create clashes.
+
 ## Installation
 
 ### Automatically (CLI / Plugman)
@@ -79,14 +81,6 @@ will check if there is a password stored within the keychain for the given key
 
 **delete(key,successCallback, errorCallback)**
 will delete the password stored under given key from the keychain
-
-## Android quirks
-
-When a new fingerprint is enrolled, no more fingerprints are enrolled, secure lock screen is disabled or forcibly reset,
-the key which is used to hash the password is permanently invalidated. It cannot be used anymore.
-
-`verify` and `save` functions will return the `"KeyPermanentlyInvalidatedException"` message in the error callback.
-This invalid key is removed - user needs to **save their password again**.
 
 # Examples
 
