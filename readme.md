@@ -13,7 +13,7 @@ Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman), co
 
 From npm:
 ```
-$ cordova plugin add cordova-plugin-keychain-touch-id
+$ cordova plugin add cordova-plugin-keychain-touch-id-ios
 $ cordova prepare
 ```
 
