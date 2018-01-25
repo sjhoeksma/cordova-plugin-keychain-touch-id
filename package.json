@@ -28,7 +28,7 @@
       "version": ">=8.0.0"
     },
     {
-      "name": "cordova-andoird",
+      "name": "cordova-android",
       "version": ">=7.0.0"
     },
     {
