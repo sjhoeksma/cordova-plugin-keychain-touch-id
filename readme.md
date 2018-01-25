@@ -17,7 +17,7 @@ $ cordova prepare
 
 The latest, from the master repo:
 ```
-$ cordova plugin add https://github.com/sjhoeksma/cordova-plugin-keychain-touch-id
+$ cordova plugin add https://github.com/paychex/cordova-plugin-keychain-touch-id
 $ cordova prepare
 ```
 
