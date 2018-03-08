@@ -47,19 +47,19 @@
         <source-file src="src/android/FingerprintAuth.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="src/android/FingerprintAuthenticationDialogFragment.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="src/android/FingerprintUiHelper.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
-        <resource-file src="res/android/drawable/ic_fingerprint_error.xml" target-dir="res/drawable" />
-        <resource-file src="res/android/drawable/ic_fingerprint_success.xml" target-dir="res/drawable" />
-        <resource-file src="res/android/drawable-hdpi/ic_fp_40px.png" target-dir="res/drawable-hdpi" />
-        <resource-file src="res/android/drawable-mdpi/ic_fp_40px.png" target-dir="res/drawable-mdpi" />
-        <resource-file src="res/android/drawable-nodpi/android_robot.png" target-dir="res/drawable-nodpi" />
-        <resource-file src="res/android/drawable-xhdpi/ic_fp_40px.png" target-dir="res/drawable-xhdpi" />
-        <resource-file src="res/android/drawable-xxhdpi/ic_fp_40px.png" target-dir="res/drawable-xxhdpi" />
-        <resource-file src="res/android/drawable-xxxhdpi/ic_fp_40px.png" target-dir="res/drawable-xxxhdpi" />
-        <resource-file src="res/android/layout/fingerprint_dialog_container.xml" target-dir="res/layout" />
-        <resource-file src="res/android/layout/fingerprint_dialog_content.xml" target-dir="res/layout" />
-        <resource-file src="res/android/values/fpauth-colors.xml" target-dir="res/values" />
-        <resource-file src="res/android/values/fpauth-strings.xml" target-dir="res/values" />
-        <resource-file src="res/android/values-es/fpauth-strings.xml" target-dir="res/values-es" />
+        <resource-file src="res/android/drawable/ic_fingerprint_error.xml" target="res/drawable/ic_fingerprint_error.xml" />
+        <resource-file src="res/android/drawable/ic_fingerprint_success.xml" target="res/drawable/ic_fingerprint_success.xml" />
+        <resource-file src="res/android/drawable-hdpi/ic_fp_40px.png" target="res/drawable-hdpi/ic_fp_40px.png" />
+        <resource-file src="res/android/drawable-mdpi/ic_fp_40px.png" target="res/drawable-mdpi/ic_fp_40px.png" />
+        <resource-file src="res/android/drawable-nodpi/android_robot.png" target="res/drawable-nodpi/android_robot.png" />
+        <resource-file src="res/android/drawable-xhdpi/ic_fp_40px.png" target="res/drawable-xhdpi/ic_fp_40px.png" />
+        <resource-file src="res/android/drawable-xxhdpi/ic_fp_40px.png" target="res/drawable-xxhdpi/ic_fp_40px.png" />
+        <resource-file src="res/android/drawable-xxxhdpi/ic_fp_40px.png" target="res/drawable-xxxhdpi/ic_fp_40px.png" />
+        <resource-file src="res/android/layout/fingerprint_dialog_container.xml" target="res/layout/fingerprint_dialog_container.xml" />
+        <resource-file src="res/android/layout/fingerprint_dialog_content.xml" target="res/layout/fingerprint_dialog_content.xml" />
+        <resource-file src="res/android/values/fpauth-colors.xml" target="res/values/fpauth-colors.xml" />
+        <resource-file src="res/android/values/fpauth-strings.xml" target="res/values/fpauth-strings.xml" />
+        <resource-file src="res/android/values-es/fpauth-strings.xml" target="res/values-es/fpauth-strings.xml" />
 
     </platform>
 </plugin>
