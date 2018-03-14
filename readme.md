@@ -64,7 +64,7 @@ if (window.plugins.touchid) {
 
 Call the function you like
 
-**isAvailable(successCallback, errorCallback(msg))** will Check if touchid is available on the used device 	
+**isAvailable(successCallback(type), errorCallback(msg))** will Check if touchid is available on the used device and pass biometric type to success callback (`touch` or `face`) 	
 	
 **save(key,password, successCallback, errorCallback(msg))** 
 will save a password under the key in the device keychain, which can be retrieved using a fingerprint
@@ -92,11 +92,11 @@ This invalid key is removed - user needs to **save their password again**.
 
 ```js
 if (window.plugins) {
-    window.plugins.touchid.isAvailable(function() {
+    window.plugins.touchid.isAvailable(function(type) {
         window.plugins.touchid.has("MyKey", function() {
-            alert("Touch ID avaialble and Password key available");
+            alert(type + " ID avaialble and Password key available");
         }, function() {
-            alert("Touch ID available but no Password Key available");
+            alert(type + " ID available but no Password Key available");
         });
     }, function(msg) {
         alert("no Touch ID available");
