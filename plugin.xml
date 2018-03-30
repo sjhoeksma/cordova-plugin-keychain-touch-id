@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         id="cordova-plugin-keychain-touch-id"
-		version="3.2.1">
+		version="3.3.1">
     <name>TouchID and Keychain</name>
 	  <author>S.J.Hoeksma</author>
     <description>TouchID and Keychain cordova plugin for iOS</description>
     <license>Apache 2.0</license>
     <keywords>cordova,touchid,keychain,plugin</keywords>
     <engines>
-      <engine name="cordova" version=">=3.0.0"/>
+      <engine name="cordova" version=">=8.0.0"/>
     </engines>
 
-    <repo>https://github.com/sjhoeksma/cordova-plugin-keychain-touch-id.git</repo>
-    <issue>https://github.com/sjhoeksma/cordova-plugin-keychain-touch-id/issues</issue>
+    <repo>https://github.com/paychex/cordova-plugin-keychain-touch-id.git</repo>
+    <issue>https://github.com/paychex/cordova-plugin-keychain-touch-id/issues</issue>
 	  <js-module src="www/touchid.js" name="TouchID">
         <clobbers target="window.plugins.touchid" />
     </js-module>
@@ -39,27 +39,27 @@
                 <param name="android-package" value="com.cordova.plugin.android.fingerprintauth.FingerprintAuth"/>
             </feature>
         </config-file>
-        <config-file target="AndroidManifest.xml" parent="/*">
+        <config-file target="app/src/main/AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.USE_FINGERPRINT" />
             <!--<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="23" />-->
         </config-file>
 
-        <source-file src="src/android/FingerprintAuth.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
-        <source-file src="src/android/FingerprintAuthenticationDialogFragment.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
-        <source-file src="src/android/FingerprintUiHelper.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
-        <source-file src="res/android/drawable/ic_fingerprint_error.xml" target-dir="res/drawable" />
-        <source-file src="res/android/drawable/ic_fingerprint_success.xml" target-dir="res/drawable" />
-        <source-file src="res/android/drawable-hdpi/ic_fp_40px.png" target-dir="res/drawable-hdpi" />
-        <source-file src="res/android/drawable-mdpi/ic_fp_40px.png" target-dir="res/drawable-mdpi" />
-        <source-file src="res/android/drawable-nodpi/android_robot.png" target-dir="res/drawable-nodpi" />
-        <source-file src="res/android/drawable-xhdpi/ic_fp_40px.png" target-dir="res/drawable-xhdpi" />
-        <source-file src="res/android/drawable-xxhdpi/ic_fp_40px.png" target-dir="res/drawable-xxhdpi" />
-        <source-file src="res/android/drawable-xxxhdpi/ic_fp_40px.png" target-dir="res/drawable-xxxhdpi" />
-        <source-file src="res/android/layout/fingerprint_dialog_container.xml" target-dir="res/layout" />
-        <source-file src="res/android/layout/fingerprint_dialog_content.xml" target-dir="res/layout" />
-        <source-file src="res/android/values/fpauth-colors.xml" target-dir="res/values" />
-        <source-file src="res/android/values/fpauth-strings.xml" target-dir="res/values" />
-        <source-file src="res/android/values-es/fpauth-strings.xml" target-dir="res/values-es" />
+        <source-file src="src/android/FingerprintAuth.java" target-dir="app/src/main/java/com/cordova/plugin/android/fingerprintauth" />
+        <source-file src="src/android/FingerprintAuthenticationDialogFragment.java" target-dir="app/src/main/java/com/cordova/plugin/android/fingerprintauth" />
+        <source-file src="src/android/FingerprintUiHelper.java" target-dir="app/src/main/java/com/cordova/plugin/android/fingerprintauth" />
+        <source-file src="res/android/drawable/ic_fingerprint_error.xml" target-dir="app/src/main/res/drawable" />
+        <source-file src="res/android/drawable/ic_fingerprint_success.xml" target-dir="app/src/main/res/drawable" />
+        <source-file src="res/android/drawable-hdpi/ic_fp_40px.png" target-dir="app/src/main/res/drawable-hdpi" />
+        <source-file src="res/android/drawable-mdpi/ic_fp_40px.png" target-dir="app/src/main/res/drawable-mdpi" />
+        <source-file src="res/android/drawable-nodpi/android_robot.png" target-dir="app/src/main/res/drawable-nodpi" />
+        <source-file src="res/android/drawable-xhdpi/ic_fp_40px.png" target-dir="app/src/main/res/drawable-xhdpi" />
+        <source-file src="res/android/drawable-xxhdpi/ic_fp_40px.png" target-dir="app/src/main/res/drawable-xxhdpi" />
+        <source-file src="res/android/drawable-xxxhdpi/ic_fp_40px.png" target-dir="app/src/main/res/drawable-xxxhdpi" />
+        <source-file src="res/android/layout/fingerprint_dialog_container.xml" target-dir="app/src/main/res/layout" />
+        <source-file src="res/android/layout/fingerprint_dialog_content.xml" target-dir="app/src/main/res/layout" />
+        <source-file src="res/android/values/fpauth-colors.xml" target-dir="app/src/main/res/values" />
+        <source-file src="res/android/values/fpauth-strings.xml" target-dir="app/src/main/res/values" />
+        <source-file src="res/android/values-es/fpauth-strings.xml" target-dir="app/src/main/res/values-es" />
 
     </platform>
 </plugin>

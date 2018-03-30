@@ -5,6 +5,9 @@ var touchid = {
 	isAvailable: function(successCallback, errorCallback){
 		exec(successCallback, errorCallback, "TouchID", "isAvailable", []);
 	},
+	biometricType: function(successCallback, errorCallback){
+		exec(successCallback, errorCallback, "TouchID", "biometricType", []);
+	},
 	save: function(key,password, successCallback, errorCallback) {
 		exec(successCallback, errorCallback, "TouchID", "save", [key,password]);
 	},

@@ -17,7 +17,7 @@ $ cordova prepare
 
 The latest, from the master repo:
 ```
-$ cordova plugin add https://github.com/sjhoeksma/cordova-plugin-keychain-touch-id
+$ cordova plugin add https://github.com/paychex/cordova-plugin-keychain-touch-id
 $ cordova prepare
 ```
 
@@ -65,6 +65,12 @@ if (window.plugins.touchid) {
 Call the function you like
 
 **isAvailable(successCallback, errorCallback(msg))** will Check if touchid is available on the used device 	
+
+**biometricType(successCallback(msg), errorCallback(msg))** 
+assumes that isAvailabe has been called
+returns FACE, TOUCH, NONE for biometric type
+currently implemented for ios.  android api currently returns NONE or TOUCH based on availability. 
+iphone X
 	
 **save(key,password, successCallback, errorCallback(msg))** 
 will save a password under the key in the device keychain, which can be retrieved using a fingerprint
