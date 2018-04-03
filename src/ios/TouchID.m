@@ -25,13 +25,32 @@
 @implementation TouchID
 
 - (void)isAvailable:(CDVInvokedUrlCommand*)command{
-    self.laContext = [[LAContext alloc] init];
-    BOOL touchIDAvailable = [self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-    if(touchIDAvailable){
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    if (NSClassFromString(@"LAContext") == NULL) {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
     }
-    else{
+    
+    self.laContext = [[LAContext alloc] init];
+    
+    if ([self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil]) {
+        NSString *biometryType = @"";
+        if (@available(iOS 11.0, *)) {
+            if (self.laContext.biometryType == LABiometryTypeFaceID) {
+                biometryType = @"face";
+            }
+            else {
+                biometryType = @"touch";
+            }
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:biometryType];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+        else {
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: @"touch"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+    }
+    else {
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Touch ID not available"];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
@@ -105,7 +124,8 @@
 
     BOOL hasLoginKey = [[NSUserDefaults standardUserDefaults] boolForKey:self.TAG];
     if(hasLoginKey){
-        BOOL touchIDAvailable = [self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+        NSError * error;
+        BOOL touchIDAvailable = [self.laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
 
         if(touchIDAvailable){
             [self.laContext evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:message reply:^(BOOL success, NSError *error) {
@@ -116,17 +136,29 @@
                     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
-                if(error != nil) {
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%li", error.code]];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                }
+                    if(error != nil) {
+                        NSDictionary *errorDictionary = @{@"OS":@"iOS",@"ErrorCode":[NSString stringWithFormat:@"%li", (long)error.code],@"ErrorMessage":error.localizedDescription};
+                        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDictionary];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    }
                 });
             }];
 
         }
         else{
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"-1"];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            if(error)
+            {
+                //If an error is returned from LA Context (should always be true in this situation)
+                NSDictionary *errorDictionary = @{@"OS":@"iOS",@"ErrorCode":[NSString stringWithFormat:@"%li", (long)error.code],@"ErrorMessage":error.localizedDescription};
+                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDictionary];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }
+            else
+            {
+                //Should never come to this, but we treat it anyway
+                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Touch ID not available"];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }
         }
     }
     else{

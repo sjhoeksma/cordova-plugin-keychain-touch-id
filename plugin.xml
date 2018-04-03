@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         id="cordova-plugin-keychain-touch-id"
-		version="3.2.1">
+		version="3.3.0">
     <name>TouchID and Keychain</name>
 	  <author>S.J.Hoeksma</author>
     <description>TouchID and Keychain cordova plugin for iOS</description>
@@ -45,6 +45,7 @@
         </config-file>
 
         <source-file src="src/android/FingerprintAuth.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
+        <source-file src="src/android/FingerprintAuthAux.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="src/android/FingerprintAuthenticationDialogFragment.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="src/android/FingerprintUiHelper.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="res/android/drawable/ic_fingerprint_error.xml" target-dir="res/drawable" />

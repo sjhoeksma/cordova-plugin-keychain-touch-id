@@ -36,5 +36,4 @@
 - (void) delete:(CDVInvokedUrlCommand*)command;
 - (void) setLocale:(CDVInvokedUrlCommand*)command;
 
-
 @end
