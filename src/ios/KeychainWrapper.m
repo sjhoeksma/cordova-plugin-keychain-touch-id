@@ -15,6 +15,7 @@ static const UInt8 kKeychainItemIdentifier[]    = "com.apple.dts.KeychainUI\0";
 
 @property (nonatomic, strong) NSMutableDictionary *keychainData;
 @property (nonatomic, strong) NSMutableDictionary *genericPasswordQuery;
+@property (nonatomic, strong) NSString *userAccount;
 
 @end
 
@@ -32,7 +33,7 @@ static const UInt8 kKeychainItemIdentifier[]    = "com.apple.dts.KeychainUI\0";
 
 @implementation KeychainWrapper
 
-- (instancetype)init
+- (instancetype)initWithAccount:(NSString *)account
 {
     self = [super init];
     
@@ -42,6 +43,14 @@ static const UInt8 kKeychainItemIdentifier[]    = "com.apple.dts.KeychainUI\0";
         OSStatus keychainErr = noErr;
         // Set up the keychain search dictionary:
         _genericPasswordQuery = [[NSMutableDictionary alloc] init];
+        self.userAccount =  @"Account";
+
+        if(account){
+            self.userAccount = account;
+        }
+
+        [_genericPasswordQuery setObject:self.userAccount
+                                  forKey:(__bridge id)kSecAttrAccount];
         
         // This keychain item is a generic password.
         [_genericPasswordQuery setObject:(__bridge id)kSecClassGenericPassword
@@ -127,7 +136,7 @@ static const UInt8 kKeychainItemIdentifier[]    = "com.apple.dts.KeychainUI\0";
     // Default generic data for Keychain Item:
     [_keychainData setObject:@"Item label" forKey:(__bridge id)kSecAttrLabel];
     [_keychainData setObject:@"Item description" forKey:(__bridge id)kSecAttrDescription];
-    [_keychainData setObject:@"Account" forKey:(__bridge id)kSecAttrAccount];
+    [_keychainData setObject:self.userAccount forKey:(__bridge id)kSecAttrAccount];
     [_keychainData setObject:@"Service" forKey:(__bridge id)kSecAttrService];
     [_keychainData setObject:@"Your comment here." forKey:(__bridge id)kSecAttrComment];
     [_keychainData setObject:@"password" forKey:(__bridge id)kSecValueData];

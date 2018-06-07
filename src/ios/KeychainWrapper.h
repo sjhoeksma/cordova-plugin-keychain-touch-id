@@ -11,6 +11,7 @@
 
 @interface KeychainWrapper : NSObject
 
+- (id)initWithAccount:(NSString *)account;
 - (void)mySetObject:(id)inObject forKey:(id)key;
 - (id)myObjectForKey:(id)key;
 - (void)writeToKeychain;
