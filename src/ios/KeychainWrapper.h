@@ -11,6 +11,7 @@
 
 @interface KeychainWrapper : NSObject
 
+- (id)initForEmail:(NSString *)email;
 - (void)mySetObject:(id)inObject forKey:(id)key;
 - (id)myObjectForKey:(id)key;
 - (void)writeToKeychain;

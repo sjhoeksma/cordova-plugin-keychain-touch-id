@@ -32,7 +32,7 @@ static const UInt8 kKeychainItemIdentifier[]    = "com.apple.dts.KeychainUI\0";
 
 @implementation KeychainWrapper
 
-- (instancetype)init
+- (instancetype)initForEmail:(NSString *)email
 {
     self = [super init];
     
@@ -42,6 +42,9 @@ static const UInt8 kKeychainItemIdentifier[]    = "com.apple.dts.KeychainUI\0";
         OSStatus keychainErr = noErr;
         // Set up the keychain search dictionary:
         _genericPasswordQuery = [[NSMutableDictionary alloc] init];
+
+        [_genericPasswordQuery setObject:email
+                                  forKey:(__bridge id)kSecAttrAccount];
         
         // This keychain item is a generic password.
         [_genericPasswordQuery setObject:(__bridge id)kSecClassGenericPassword
