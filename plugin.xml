@@ -61,6 +61,8 @@
         <resource-file src="res/android/values/fpauth-colors.xml" target="res/values/fpauth-colors.xml" />
         <resource-file src="res/android/values/fpauth-strings.xml" target="res/values/fpauth-strings.xml" />
         <resource-file src="res/android/values-es/fpauth-strings.xml" target="res/values-es/fpauth-strings.xml" />
-
+        <resource-file src="res/android/values-it/fpauth-strings.xml" target="res/values-it/fpauth-strings.xml" />
+        <resource-file src="res/android/values-ar/fpauth-strings.xml" target="res/values-ar/fpauth-strings.xml" />
+        <resource-file src="res/android/values-fr/fpauth-strings.xml" target="res/values-fr/fpauth-strings.xml" />
     </platform>
 </plugin>
