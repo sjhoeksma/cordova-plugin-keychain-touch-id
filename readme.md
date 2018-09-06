@@ -2,9 +2,19 @@
 
 A cordova plugin adding the iOS TouchID or FaceID / Android fingerprint to your app and allowing you to store a password securely in the device keychain.
 
+## Based on the original Touch ID created by different people
+
+* https://github.com/EddyVerbruggen/cordova-plugin-touch-id
+* https://github.com/kunder-lab/kunder-touchid-keychain
+* https://github.com/PeerioTechnologies/peerio-keychain-touchid
+* https://github.com/nheezemans/touchid/blob/master/src/ios/TouchID.m
+
+Cordova plugin for interacting with iOS touchId and keychain
+
 ## Installation
 
 ### Automatically (CLI / Plugman)
+
 Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman), compatible with [PhoneGap 3.0 CLI](http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface_add_features), here's how it works with the CLI (backup your project first!):
 
 From npm:
@@ -19,11 +29,12 @@ $ cordova plugin add https://github.com/sjhoeksma/cordova-plugin-keychain-touch-
 $ cordova prepare
 ```
 
-touchid.js is brought in automatically. There is no need to change or add anything in your html.
+`touchid.js` is brought in automatically. There is no need to change or add anything in your html.
 
 ### Manually
 
 1\. Add the following xml to your `config.xml` in the root directory of your `www` folder:
+
 ```xml
 <feature name="TouchID">
   <param name="ios-package" value="TouchID" />
@@ -34,6 +45,7 @@ You'll need to add the `LocalAuthentication.framework` and `Security.framework` 
 Click your project, Build Phases, Link Binary With Libraries, search for and add the frameworks.
 
 2\. Grab a copy of TouchID.js, add it to your project and reference it in `index.html`:
+
 ```html
 <script type="text/javascript" src="js/touchid.js"></script>
 ```
@@ -42,104 +54,101 @@ Click your project, Build Phases, Link Binary With Libraries, search for and add
 
 iOS: Copy the four `.h` and two `.m` files to `platforms/ios/<ProjectName>/Plugins`
 
-### Base on the original touch ID created by different people
-* https://github.com/EddyVerbruggen/cordova-plugin-touch-id
-* https://github.com/kunder-lab/kunder-touchid-keychain
-* https://github.com/PeerioTechnologies/peerio-keychain-touchid
-* https://github.com/nheezemans/touchid/blob/master/src/ios/TouchID.m
+## Usage
 
-Cordova plugin for interacting with iOS touchId and keychain
+Call the function you like:
 
-# Usage
+* `touchid.isAvailable([successCallback(biometryType), errorCallback(msg)])` function checks if `touchid` is available on the used device. The `successCallback` gets the `biometryType` argument with 'face' on iPhone X, 'touch' on other devices.
 
-Make sure you check if the plugin is installed
+* `touchid.save(key, password, [userAuthenticationRequired, successCallback(), errorCallback(msg))]` function saves a `password` indexed by a `key` in the device keychain. If `userAuthenticationRequired` param is `true` (default value), then the user will be asked to authenticate before saving the password to give the app more security. Otherwise there's no need to authenticate to save.
 
-```
-if (window.plugins.touchid) {
+* `touchid.verify(key, [message, successCallback(password), errorCallback(errorCode)])` function opens the fingerprint dialog, for the given `key`, showing an additional message. `successCallback` will return the password stored in the device keychain. `errorCallback` will return an error code, where -1 indicates that the `key` is not available.
 
-}
-```
+* `touchid.has(key, [successCallback(), errorCallback()])` function checks if there is a `password` stored in the device keychain for the given `key`.
 
-Call the function you like
-
-**isAvailable(successCallback(biometryType), errorCallback(msg))** will Check if touchid is available on the used device. The `successCallback` gets the `biometryType` argument with 'face' on iPhone X, 'touch' on other devices.
-
-**save(key,password, successCallback, errorCallback(msg))**
-will save a password under the key in the device keychain, which can be retrieved using a fingerprint.
-userAuthenticationRequired if true will save after authentication with fingerprint, if false there's no need to authenticate to save. Default to true, if not set.
-
-**verify(key,message,successCallback(password), errorCallback(errorCode))**
-will open the fingerprint dialog, for the given key, showing an additional message.
-successCallback will return the password stored in key chain.
-errorCallback will return the error code, where -1 indicated not available.
-
-**has(key,successCallback, errorCallback)**
-will check if there is a password stored within the keychain for the given key
-
-**delete(key,successCallback, errorCallback)**
-will delete the password stored under given key from the keychain
+* `delete(key, [successCallback(), errorCallback()])` function deletes the `password` stored under given `key` in the device keychain.
 
 ## Android quirks
 
 When a new fingerprint is enrolled, no more fingerprints are enrolled, secure lock screen is disabled or forcibly reset,
 the key which is used to hash the password is permanently invalidated. It cannot be used anymore.
 
-`verify` and `save` functions will return the `"KeyPermanentlyInvalidatedException"` message in the error callback.
-This invalid key is removed - user needs to **save their password again**.
+`verify` and `save` functions will return the `"KeyPermanentlyInvalidatedException"` message in the error callback. This invalid key is removed - user needs to **save their password again**.
 
-# Examples
+## Examples
 
-Make sure the plugins are enabled.
+Make sure the plugins are enabled before all.
 
 ```js
-    if (!window.plugins) {
-        alert('Plugins not available')
+   if (!window.plugins || !window.plugins.touchid) {
+        alert('Plugins are not available')
     }
 ```
 
-Check if a password has already been saved under the key `MyKey`.
+**Scenario 1**: Check if a password has already been saved under the key `MyKey`.
 
 ```js
     window.plugins.touchid.isAvailable(
-        function(biometryType) {
-            var serviceName = biometryType === 'face' ? 'Face ID' : 'Touch ID';
+        biometryType => {
+            const serviceName = biometryType === 'face' ? 'Face ID' : 'Touch ID';
 
             window.plugins.touchid.has(
                 'MyKey',
-                function() {
+                () => {
+                    // Success
                     alert(
-                        serviceName + 'service is available, and password for key "MyKey" is registered'
+                        serviceName +
+                            'service is available, and password for key "MyKey" is registered'
                     );
                 },
-                function() {
+                () => {
+                    // Failure
                     alert(
-                        serviceName + 'service is available, but Password for key "MyKey" is not registered'
+                        serviceName +
+                            'service is available, but Password for key "MyKey" is not registered'
                     );
                 }
             );
         },
-        function(msg) {
+        () => {
             alert('Biometry (Touch or Face ID) is not available');
         }
     );
 ```
 
-Get, save and delete a password associated to `MyKey`.
+**Scenario 2**: Store your credentials after entering username/password. Recover them next time you reopen the app.
 
 ``` js
-    window.plugins.touchid.verify('MyKey', 'My Message', function(password) {
-        alert('Password for key "MyKey" is ' + password);
-    });
-```
+    document.getElementById('form-login').addEventListener('submit', event => {
+        event.preventDefault();
 
-``` js
-    window.plugins.touchid.save('MyKey', 'My Password', true, function() {
-        alert('Password for key "MyKey" saved');
-    });
-```
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
-``` js
-    window.plugins.touchid.delete('MyKey', function() {
-        alert('Password for key "MyKey" deleted');
+        const credentials = JSON.stringify({ username, password });
+
+        window.plugins.touchid.isAvailable(() => {
+            window.plugins.touchid.save('MyKey', credentials, true, () => {
+                alert(`Credentials saved`);
+            });
+        });
     });
+
+    document.addEventListener(
+        'deviceready',
+        () => {
+            window.plugins.touchid.isAvailable(() => {
+                window.plugins.touchid.verify(
+                    'MyKey',
+                    'Recover your credentials from the keychain',
+                    savedCredentials => {
+                        const { login, password } = JSON.parse(savedCredentials);
+
+                        alert(`Your credentials are ${login}:${password}`);
+                    }
+                );
+            });
+        },
+        false
+    );
 ```
