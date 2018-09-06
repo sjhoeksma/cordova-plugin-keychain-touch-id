@@ -80,75 +80,75 @@ the key which is used to hash the password is permanently invalidated. It cannot
 Make sure the plugins are enabled before all.
 
 ```js
-   if (!window.plugins || !window.plugins.touchid) {
-        alert('Plugins are not available')
-    }
+if (!window.plugins || !window.plugins.touchid) {
+    alert('Plugins are not available')
+}
 ```
 
 **Scenario 1**: Check if a password has already been saved under the key `MyKey`.
 
 ```js
-    window.plugins.touchid.isAvailable(
-        biometryType => {
-            const serviceName = biometryType === 'face' ? 'Face ID' : 'Touch ID';
+window.plugins.touchid.isAvailable(
+    biometryType => {
+        const serviceName = biometryType === 'face' ? 'Face ID' : 'Touch ID';
 
-            window.plugins.touchid.has(
-                'MyKey',
-                () => {
-                    // Success
-                    alert(
-                        serviceName +
-                            'service is available, and password for key "MyKey" is registered'
-                    );
-                },
-                () => {
-                    // Failure
-                    alert(
-                        serviceName +
-                            'service is available, but Password for key "MyKey" is not registered'
-                    );
-                }
-            );
-        },
-        () => {
-            alert('Biometry (Touch or Face ID) is not available');
-        }
-    );
+        window.plugins.touchid.has(
+            'MyKey',
+            () => {
+                // Success
+                alert(
+                    serviceName +
+                        'service is available, and password for key "MyKey" is registered'
+                );
+            },
+            () => {
+                // Failure
+                alert(
+                    serviceName +
+                        'service is available, but Password for key "MyKey" is not registered'
+                );
+            }
+        );
+    },
+    () => {
+        alert('Biometry (Touch or Face ID) is not available');
+    }
+);
 ```
 
 **Scenario 2**: Store your credentials after entering username/password. Recover them next time you reopen the app.
 
 ``` js
-    document.getElementById('form-login').addEventListener('submit', event => {
-        event.preventDefault();
+document.getElementById('form-login').addEventListener('submit', event => {
+    event.preventDefault();
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-        const credentials = JSON.stringify({ username, password });
+    const credentials = JSON.stringify({ username, password });
 
-        window.plugins.touchid.isAvailable(() => {
-            window.plugins.touchid.save('MyKey', credentials, true, () => {
-                alert(`Credentials saved`);
-            });
+    window.plugins.touchid.isAvailable(() => {
+        window.plugins.touchid.save('MyKey', credentials, true, () => {
+            alert(`Credentials saved`);
         });
     });
+});
 
-    document.addEventListener(
-        'deviceready',
-        () => {
-            window.plugins.touchid.isAvailable(() => {
-                window.plugins.touchid.verify(
-                    'MyKey',
-                    'Recover your credentials from the keychain',
-                    savedCredentials => {
-                        const { login, password } = JSON.parse(savedCredentials);
+document.addEventListener(
+    'deviceready',
+    () => {
+        window.plugins.touchid.isAvailable(() => {
+            window.plugins.touchid.verify(
+                'MyKey',
+                'Recover your credentials from the keychain',
+                savedCredentials => {
+                    const { login, password } = JSON.parse(savedCredentials);
 
-                        alert(`Your credentials are ${login}:${password}`);
-                    }
-                );
-            });
-        },
-        false
-    );
+                    alert(`Your credentials are ${login}:${password}`);
+                }
+            );
+        });
+    },
+    false
+);
 ```
