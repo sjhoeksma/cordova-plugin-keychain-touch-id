@@ -54,6 +54,28 @@ Click your project, Build Phases, Link Binary With Libraries, search for and add
 
 iOS: Copy the four `.h` and two `.m` files to `platforms/ios/<ProjectName>/Plugins`
 
+## How to Setup Face ID for iOS >= 11
+
+There is a new key in Info.plist: `NSFaceIDUsageDescription`. Your app will crash if you try to use Face ID if you don't set this key.
+
+> This app has crashed because it attempted to access privacy-sensitive data without a usage description. The app's Info.plist must contain an NSFaceIDUsageDescription key with a string value explaining to the user how the app uses this data.
+
+### Using XCode
+
+1. Open your project on XCode
+1. Open tab `Info`
+1. Add the key `NSFaceIDUsageDescription` in the Info.plist file
+
+### Using Plugin codova-custom-config
+
+Set the following config in your `config.xml` file.
+
+``` xml
+<edit-config target="NSFaceIDUsageDescription" file="*-Info.plist" mode="merge">
+    <string>Explain your Face ID usage</string>
+</edit-config>
+```
+
 ## Usage
 
 Call the function you like:
@@ -66,7 +88,7 @@ Call the function you like:
 
 * `touchid.has(key, [successCallback(), errorCallback()])` function checks if there is a `password` stored in the device keychain for the given `key`.
 
-* `delete(key, [successCallback(), errorCallback()])` function deletes the `password` stored under given `key` in the device keychain.
+* `touchid.delete(key, [successCallback(), errorCallback()])` function deletes the `password` stored under given `key` in the device keychain.
 
 ## Android quirks
 
