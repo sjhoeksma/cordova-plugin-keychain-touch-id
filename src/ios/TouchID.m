@@ -22,6 +22,8 @@
 #include <sys/sysctl.h>
 #import <Cordova/CDV.h>
 
+static NSString *const FingerprintDatabaseStateKey = @"FingerprintDatabaseStateKey";
+
 @implementation TouchID
 
 - (void)isAvailable:(CDVInvokedUrlCommand*)command{
@@ -165,5 +167,44 @@
            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"-1"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
+}
+
+- (void) didFingerprintDatabaseChange:(CDVInvokedUrlCommand*)command {
+  // Get enrollment state
+  [self.commandDelegate runInBackground:^{
+    LAContext *laContext = [[LAContext alloc] init];
+    NSError *error = nil;
+
+    // we expect the dev to have checked 'isAvailable' already so this should not return an error,
+    // we do however need to run canEvaluatePolicy here in order to get a non-nil evaluatedPolicyDomainState
+    if (![laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+      [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]] callbackId:command.callbackId];
+      return;
+    }
+
+    // only supported on iOS9+, so check this.. if not supported just report back as false
+    if (![laContext respondsToSelector:@selector(evaluatedPolicyDomainState)]) {
+      [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:NO] callbackId:command.callbackId];
+      return;
+    }
+
+    NSData * state = [laContext evaluatedPolicyDomainState];
+    if (state != nil) {
+
+      NSString * stateStr = [state base64EncodedStringWithOptions:0];
+
+      NSString * storedState = [[NSUserDefaults standardUserDefaults] stringForKey:FingerprintDatabaseStateKey];
+
+      // whenever a finger is added/changed/removed the value of the storedState changes,
+      // so compare agains a value we previously stored in the context of this app
+      BOOL changed = storedState != nil && ![stateStr isEqualToString:storedState];
+
+      [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:changed] callbackId:command.callbackId];
+
+      // Store enrollment
+      [[NSUserDefaults standardUserDefaults] setObject:stateStr forKey:FingerprintDatabaseStateKey];
+      [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+  }];
 }
 @end
