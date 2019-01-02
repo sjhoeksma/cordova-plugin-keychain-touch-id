@@ -68,7 +68,6 @@ Call the function you like
 
 **save(key,password, successCallback, errorCallback(msg))**
 will save a password under the key in the device keychain, which can be retrieved using a fingerprint. 
-userAuthenticationRequired if true will save after authentication with fingerprint, if false there's no need to authenticate to save. Default to true, if not set.
 
 **verify(key,message,successCallback(password), errorCallback(errorCode))**
 will open the fingerprint dialog, for the given key, showing an additional message.
