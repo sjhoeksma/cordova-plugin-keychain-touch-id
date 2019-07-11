@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         id="cordova-plugin-keychain-touch-id"
-		version="3.3.0">
+		version="3.3.1">
     <name>TouchID and Keychain</name>
 	  <author>S.J.Hoeksma</author>
     <description>TouchID and Keychain cordova plugin for iOS</description>
@@ -22,6 +22,10 @@
             <feature name="TouchID">
                 <param name="ios-package" value="TouchID"/>
             </feature>
+        </config-file>
+        <preference name="FACEID_USAGE_DESCRIPTION" default=" " />
+        <config-file target="*-Info.plist" parent="NSFaceIDUsageDescription">
+            <string>$FACEID_USAGE_DESCRIPTION</string>
         </config-file>
         <header-file src="src/ios/KeychainWrapper.h" />
         <source-file src="src/ios/KeychainWrapper.m" />
