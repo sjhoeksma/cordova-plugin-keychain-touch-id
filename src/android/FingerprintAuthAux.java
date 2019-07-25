@@ -78,6 +78,8 @@ public class FingerprintAuthAux {
     private static final String HAS = "has";
     private static final String DELETE = "delete";
     private static final String MOVE = "move";
+    private static final String CHECK_USER_ENROLLED = "checkUserEnrolled";
+    private static final int FINGERPRINT_CHECK_ONLY = -999;
 
     /**
      * Alias for our key in the Android Key Store
@@ -387,6 +389,24 @@ public class FingerprintAuthAux {
             mPluginResult = new PluginResult(PluginResult.Status.OK);
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
+        } else if (action.equals(CHECK_USER_ENROLLED)) {
+            final String message = args.getString(0);
+            if (isHardwareDetected()) {
+                if (hasEnrolledFingerprints()) {
+                    showFingerprintDialog(FINGERPRINT_CHECK_ONLY, message, cordova);
+                    mPluginResult.setKeepCallback(true);
+                } else {
+                    String errorMessage =
+                            createErrorMessage(NO_FINGERPRINT_ENROLLED_CODE, NO_FINGERPRINT_ENROLLED_MESSAGE);
+                    mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
+                    mCallbackContext.sendPluginResult(mPluginResult);
+                }
+            } else {
+                String errorMessage = createErrorMessage(NO_HARDWARE_CODE, NO_HARDWARE_MESSAGE);
+                mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);
+                mCallbackContext.sendPluginResult(mPluginResult);
+            }
+            return true;
         }
         return false;
     }
@@ -498,11 +518,13 @@ public class FingerprintAuthAux {
                 mFragment.setArguments(bundle);
                 mFragment.setmFingerPrintAuth(auth);
 
-                if (initCipher(mode, cordova)) {
+                if (mode == FINGERPRINT_CHECK_ONLY || initCipher(mode, cordova)) {
                     mFragment.setCancelable(false);
                     // Show the fingerprint dialog. The user has the option to use the fingerprint with
                     // crypto, or you can fall back to using a server-side verified password.
-                    mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
+                    if (mode != FINGERPRINT_CHECK_ONLY) {
+                        mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
+                    }
                     mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
                 } else {
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to init Cipher");
@@ -538,6 +560,8 @@ public class FingerprintAuthAux {
 
                     editor.commit();
                     mToEncrypt = "";
+                    result = "success";
+                } else if (mCurrentMode == FINGERPRINT_CHECK_ONLY) {
                     result = "success";
                 }
             }

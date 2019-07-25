@@ -27,7 +27,7 @@
 
 @property (strong,nonatomic)NSString* TAG;
 @property (strong, nonatomic) KeychainWrapper* MyKeychainWrapper;
-@property (strong, nonatomic) LAContext* laContext;
+//@property (strong, nonatomic) LAContext* laContext;
 
 - (void) isAvailable:(CDVInvokedUrlCommand*)command;
 - (void) has:(CDVInvokedUrlCommand*)command;
