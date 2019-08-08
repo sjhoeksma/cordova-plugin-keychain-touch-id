@@ -128,6 +128,7 @@
         BOOL touchIDAvailable = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
 
         if(touchIDAvailable){
+            context.localizedFallbackTitle = @"";
             [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:message reply:^(BOOL success, NSError *error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
 
