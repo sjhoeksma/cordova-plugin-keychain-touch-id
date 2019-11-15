@@ -525,7 +525,12 @@ public class FingerprintAuthAux {
                     if (mode != FINGERPRINT_CHECK_ONLY) {
                         mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
                     }
-                    mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                    try {
+                        mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                    }
+                    catch (IllegalStateException ignored) {
+                        Log.i(TAG, "Application is running in the background, fingerprint dialog cannot be shown");
+                    }
                 } else {
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to init Cipher");
                     mCallbackContext.sendPluginResult(mPluginResult);
