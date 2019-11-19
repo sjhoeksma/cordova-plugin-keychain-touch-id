@@ -530,6 +530,8 @@ public class FingerprintAuthAux {
                     }
                     catch (IllegalStateException ignored) {
                         Log.i(TAG, "Application is running in the background, fingerprint dialog cannot be shown");
+                        mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to open fingerprint dialog");
+                        mCallbackContext.sendPluginResult(mPluginResult);
                     }
                 } else {
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to init Cipher");
