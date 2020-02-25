@@ -60,6 +60,8 @@
         <resource-file src="res/android/layout/fingerprint_dialog_content.xml" target="res/layout/fingerprint_dialog_content.xml" />
         <resource-file src="res/android/values/fpauth-colors.xml" target="res/values/fpauth-colors.xml" />
         <resource-file src="res/android/values/fpauth-strings.xml" target="res/values/fpauth-strings.xml" />
+        <resource-file src="res/android/values-ar/fpauth-strings.xml" target="res/values-ar/fpauth-strings.xml" />
+        <resource-file src="res/android/values-fr/fpauth-strings.xml" target="res/values-fr/fpauth-strings.xml" />
         <resource-file src="res/android/values-es/fpauth-strings.xml" target="res/values-es/fpauth-strings.xml" />
 
     </platform>
