@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         id="cordova-plugin-keychain-touch-id"
-		version="3.4.2">
+		version="3.5.0">
     <name>TouchID and Keychain</name>
 	  <author>S.J.Hoeksma</author>
     <description>TouchID and Keychain cordova plugin for iOS</description>
