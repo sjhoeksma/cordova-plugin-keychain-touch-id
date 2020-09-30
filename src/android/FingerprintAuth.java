@@ -41,6 +41,10 @@ import org.json.JSONObject;
     mCallbackContext.error("Cancelled");
   }
 
+  public static void onError(String error) {
+    mCallbackContext.error(error);
+  }
+
 
   /**
    * Sets the context of the Command. This can then be used to do things like
@@ -81,7 +85,7 @@ import org.json.JSONObject;
       throws JSONException {
 
     mCallbackContext = callbackContext;
-          
+
     if (android.os.Build.VERSION.SDK_INT < 23) {
       String errorMessage = createErrorMessage(NO_HARDWARE_CODE, NO_HARDWARE_MESSAGE);
       mPluginResult = new PluginResult(PluginResult.Status.ERROR, errorMessage);

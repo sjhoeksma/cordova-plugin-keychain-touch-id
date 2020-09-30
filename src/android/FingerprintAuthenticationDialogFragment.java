@@ -82,55 +82,56 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         int dialogMode = args.getInt("dialogMode");
         String message = args.getString("dialogMessage");
         Log.d(TAG, "dialogMode: " + dialogMode);
-
-        int fingerprint_auth_dialog_title_id = getResources()
-                .getIdentifier("fingerprint_auth_dialog_title", "string",
-                        FingerprintAuth.packageName);
-        getDialog().setTitle(getString(fingerprint_auth_dialog_title_id));
-        int fingerprint_dialog_container_id = getResources()
-                .getIdentifier("fingerprint_dialog_container", "layout",
-                        FingerprintAuth.packageName);
-        View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
-        int cancel_button_id = getResources()
+        try {
+            int fingerprint_auth_dialog_title_id = getResources()
+                .getIdentifier("fingerprint_auth_dialog_title", "string", FingerprintAuth.packageName);
+            getDialog().setTitle(getString(fingerprint_auth_dialog_title_id));
+            int fingerprint_dialog_container_id = getResources()
+                .getIdentifier("fingerprint_dialog_container", "layout", FingerprintAuth.packageName);
+            View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
+            int cancel_button_id = getResources()
                 .getIdentifier("cancel_button", "id", FingerprintAuth.packageName);
-
-        TextView description =  (TextView) v.findViewById(getResources()
+            TextView description = (TextView) v.findViewById(getResources()
                 .getIdentifier("fingerprint_description", "id", FingerprintAuth.packageName));
-        description.setText(message);
-        mCancelButton = (Button) v.findViewById(cancel_button_id);
-        mCancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FingerprintAuth.onCancelled();
-                dismissAllowingStateLoss();
-            }
-        });
+            description.setText(message);
+            mCancelButton = (Button) v.findViewById(cancel_button_id);
+            mCancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FingerprintAuth.onCancelled();
+                    dismissAllowingStateLoss();
+                }
+            });
 
-        int fingerprint_container_id = getResources()
+            int fingerprint_container_id = getResources()
                 .getIdentifier("fingerprint_container", "id", FingerprintAuth.packageName);
-        mFingerprintContent = v.findViewById(fingerprint_container_id);
+            mFingerprintContent = v.findViewById(fingerprint_container_id);
 
-        int new_fingerprint_enrolled_description_id = getResources()
+            int new_fingerprint_enrolled_description_id = getResources()
                 .getIdentifier("new_fingerprint_enrolled_description", "id",
-                        FingerprintAuth.packageName);
+                FingerprintAuth.packageName);
 
-        int fingerprint_icon_id = getResources()
+            int fingerprint_icon_id = getResources()
                 .getIdentifier("fingerprint_icon", "id", FingerprintAuth.packageName);
-        int fingerprint_status_id = getResources()
+            int fingerprint_status_id = getResources()
                 .getIdentifier("fingerprint_status", "id", FingerprintAuth.packageName);
-        mFingerprintUiHelper = mFingerprintUiHelperBuilder.build(
-                (ImageView) v.findViewById(fingerprint_icon_id),
-                (TextView) v.findViewById(fingerprint_status_id), this);
-        updateStage();
-
-        return v;
+            mFingerprintUiHelper = mFingerprintUiHelperBuilder.build(
+              (ImageView) v.findViewById(fingerprint_icon_id),
+              (TextView) v.findViewById(fingerprint_status_id), this);
+            updateStage();
+            return v;
+        } catch (Exception e) {
+            FingerprintAuth.onError(e.getLocalizedMessage());
+            return null;
+        }
     }
-
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mStage == Stage.FINGERPRINT) {
+        if (mFingerprintUiHelper == null) {
+            dismissAllowingStateLoss();
+        } else if (mStage == Stage.FINGERPRINT) {
             mFingerprintUiHelper.startListening(mCryptoObject);
         }
     }
@@ -142,7 +143,9 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     @Override
     public void onPause() {
         super.onPause();
-        mFingerprintUiHelper.stopListening();
+        if (mFingerprintUiHelper != null) {
+            mFingerprintUiHelper.stopListening();
+        }
     }
 
     /**
