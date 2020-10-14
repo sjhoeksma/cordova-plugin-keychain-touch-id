@@ -507,6 +507,7 @@ public class FingerprintAuthAux {
                         mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
                     } catch (IllegalStateException ignored) {
                         // Ignore. This exception is thrown if saveInstanceState has been called
+                        Log.i(TAG, "Failed to open fingerprint dialog. Check that activity is in the foreground and is not being destroyed.");
                     }
                 } else {
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to init Cipher");
