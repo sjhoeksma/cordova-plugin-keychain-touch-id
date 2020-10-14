@@ -503,7 +503,11 @@ public class FingerprintAuthAux {
                     // Show the fingerprint dialog. The user has the option to use the fingerprint with
                     // crypto, or you can fall back to using a server-side verified password.
                     mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-                    mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                    try {
+                        mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                    } catch (IllegalStateException ignored) {
+                        // Ignore. This exception is thrown if saveInstanceState has been called
+                    }
                 } else {
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to init Cipher");
                     mCallbackContext.sendPluginResult(mPluginResult);
