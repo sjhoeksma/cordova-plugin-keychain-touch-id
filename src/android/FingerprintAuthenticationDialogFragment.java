@@ -83,13 +83,18 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         String message = args.getString("dialogMessage");
         Log.d(TAG, "dialogMode: " + dialogMode);
 
-        int fingerprint_auth_dialog_title_id = getResources()
-                .getIdentifier("fingerprint_auth_dialog_title", "string",
-                        FingerprintAuth.packageName);
-        getDialog().setTitle(getString(fingerprint_auth_dialog_title_id));
-        int fingerprint_dialog_container_id = getResources()
-                .getIdentifier("fingerprint_dialog_container", "layout",
-                        FingerprintAuth.packageName);
+        try {
+            int fingerprint_auth_dialog_title_id = getResources()
+                    .getIdentifier("fingerprint_auth_dialog_title", "string",
+                            FingerprintAuth.packageName);
+            getDialog().setTitle(getString(fingerprint_auth_dialog_title_id));
+            int fingerprint_dialog_container_id = getResources()
+                    .getIdentifier("fingerprint_dialog_container", "layout",
+                            FingerprintAuth.packageName);
+        } catch (NotFoundException e) {
+            Log.d(TAG, "NotFoundException: " + e);
+        }
+                
         View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
         int cancel_button_id = getResources()
                 .getIdentifier("cancel_button", "id", FingerprintAuth.packageName);
