@@ -23,6 +23,11 @@
                 <param name="ios-package" value="TouchID"/>
             </feature>
         </config-file>
+                <!-- Usage description of Face ID for iOS 11+ -->
+        <preference name="FACEID_USAGE_DESCRIPTION" default=" " />
+        <config-file target="*-Info.plist" parent="NSFaceIDUsageDescription">
+            <string>$FACEID_USAGE_DESCRIPTION</string>
+        </config-file>
         <header-file src="src/ios/KeychainWrapper.h" />
         <source-file src="src/ios/KeychainWrapper.m" />
         <header-file src="src/ios/TouchID.h" />
@@ -60,6 +65,8 @@
         <resource-file src="res/android/layout/fingerprint_dialog_content.xml" target="res/layout/fingerprint_dialog_content.xml" />
         <resource-file src="res/android/values/fpauth-colors.xml" target="res/values/fpauth-colors.xml" />
         <resource-file src="res/android/values/fpauth-strings.xml" target="res/values/fpauth-strings.xml" />
+        <resource-file src="res/android/values-ar/fpauth-strings.xml" target="res/values-ar/fpauth-strings.xml" />
+        <resource-file src="res/android/values-fr/fpauth-strings.xml" target="res/values-fr/fpauth-strings.xml" />
         <resource-file src="res/android/values-es/fpauth-strings.xml" target="res/values-es/fpauth-strings.xml" />
 
     </platform>

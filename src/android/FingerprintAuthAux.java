@@ -235,7 +235,6 @@ public class FingerprintAuthAux {
         if (action.equals(SAVE)) {
             final String key = args.getString(0);
             final String password = args.getString(1);
-            setUserAuthenticationRequired = args.get(2).equals(null) || args.getBoolean(2);
 
             if (isFingerprintAuthAvailable()) {
                 SecretKey secretKey = getSecretKey();
@@ -502,8 +501,14 @@ public class FingerprintAuthAux {
                     mFragment.setCancelable(false);
                     // Show the fingerprint dialog. The user has the option to use the fingerprint with
                     // crypto, or you can fall back to using a server-side verified password.
-                    mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-                    mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                    mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher)); 
+                    try {
+                        mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                    } catch (IllegalStateException ignored) {
+                        // Return error in callback so we can handle this in implementation
+                        mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to open fingerprint dialog");
+                        mCallbackContext.sendPluginResult(mPluginResult);
+                    }
                 } else {
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR, "Failed to init Cipher");
                     mCallbackContext.sendPluginResult(mPluginResult);
