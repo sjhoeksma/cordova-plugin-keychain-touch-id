@@ -30,9 +30,9 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    
+
     LAContext *context = [[LAContext alloc] init];
-    
+
     if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil]) {
         NSString *biometryType = @"";
         if (@available(iOS 11.0, *)) {
@@ -120,51 +120,58 @@
     self.TAG = (NSString*)[command.arguments objectAtIndex:0];
     NSString* message = (NSString*)[command.arguments objectAtIndex:1];
     LAContext *context = [[LAContext alloc] init];
-    self.MyKeychainWrapper = [[KeychainWrapper alloc]init];
 
-    BOOL hasLoginKey = [[NSUserDefaults standardUserDefaults] boolForKey:self.TAG];
-    if(hasLoginKey){
-        NSError * error;
-        BOOL touchIDAvailable = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
+    @try {
+        self.MyKeychainWrapper = [[KeychainWrapper alloc]init];
 
-        if(touchIDAvailable){
-            context.localizedFallbackTitle = @"";
-            [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:message reply:^(BOOL success, NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL hasLoginKey = [[NSUserDefaults standardUserDefaults] boolForKey:self.TAG];
+        if(hasLoginKey){
+            NSError * error;
+            BOOL touchIDAvailable = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
 
-                if(success){
-                    NSString *password = [self.MyKeychainWrapper myObjectForKey:@"v_Data"];
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                }
-                    if(error != nil) {
-                        NSDictionary *errorDictionary = @{@"OS":@"iOS",@"ErrorCode":[NSString stringWithFormat:@"%li", (long)error.code],@"ErrorMessage":error.localizedDescription};
-                        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDictionary];
+            if(touchIDAvailable){
+                context.localizedFallbackTitle = @"";
+                [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:message reply:^(BOOL success, NSError *error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+
+                    if(success){
+                        NSString *password = [self.MyKeychainWrapper myObjectForKey:@"v_Data"];
+                        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: password];
                         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                     }
-                });
-            }];
+                        if(error != nil) {
+                            NSDictionary *errorDictionary = @{@"OS":@"iOS",@"ErrorCode":[NSString stringWithFormat:@"%li", (long)error.code],@"ErrorMessage":error.localizedDescription};
+                            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDictionary];
+                            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                        }
+                    });
+                }];
 
+            }
+            else{
+                if(error)
+                {
+                    //If an error is returned from LA Context (should always be true in this situation)
+                    NSDictionary *errorDictionary = @{@"OS":@"iOS",@"ErrorCode":[NSString stringWithFormat:@"%li", (long)error.code],@"ErrorMessage":error.localizedDescription};
+                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDictionary];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                }
+                else
+                {
+                    //Should never come to this, but we treat it anyway
+                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Touch ID not available"];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                }
+            }
         }
         else{
-            if(error)
-            {
-                //If an error is returned from LA Context (should always be true in this situation)
-                NSDictionary *errorDictionary = @{@"OS":@"iOS",@"ErrorCode":[NSString stringWithFormat:@"%li", (long)error.code],@"ErrorMessage":error.localizedDescription};
-                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:errorDictionary];
+               CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"-1"];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-            }
-            else
-            {
-                //Should never come to this, but we treat it anyway
-                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Touch ID not available"];
-                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-            }
         }
     }
-    else{
-           CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"-1"];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    @catch (id anException){
+      CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [anException reason]];
+	[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 }
 
@@ -180,7 +187,7 @@
                 CDVPluginResult* pluginResult;
                 if(success){
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:true];
-                    
+
                 }
                 if(error != nil) {
                     NSDictionary *errorDictionary = @{@"OS":@"iOS",@"ErrorCode":[NSString stringWithFormat:@"%li", (long)error.code],@"ErrorMessage":error.localizedDescription};
