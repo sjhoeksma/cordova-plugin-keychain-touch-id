@@ -34,7 +34,7 @@
     "url": "https://github.com/sjhoeksma/cordova-plugin-keychain-touch-id/issues"
   },
   "homepage": "https://github.com/sjhoeksma/cordova-plugin-keychain-touch-id#readme",
-  "main": "index.js",
+  "main": "www/touchid.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }
